@@ -23,16 +23,16 @@
 
 (defun yandex-arc/mode-init ()
   "Initializes Yandex Arc Major Mode"
-  (yandex-arc/update-root)
+  (yandex-arc/shell/update-root)
   (switch-to-buffer
-   (concat "Arc: " (file-name-nondirectory yandex-arc/root)))
+   (concat "Arc: " (file-name-nondirectory yandex-arc/shell/root)))
   (yandex-arc-mode)
   (yandex-arc/update-arc-buffer))
 
 
 (defun yandex-arc/update-arc-buffer ()
-  (yandex-arc/update-status)
-  (yandex-arc/update-info)
+  (yandex-arc/shell/update-status)
+  (yandex-arc/shell/update-info)
   (yandex-arc/redraw-arc-buffer))
 
 
@@ -53,14 +53,14 @@
 
 
 (defun yandex-arc/info-to-str ()
-  "Converts `yandex-arc/info-hash' to a string."
-  (let ((branch  (gethash "branch"  yandex-arc/info-hash))
-        (summary (gethash "summary" yandex-arc/info-hash)))
+  "Converts `yandex-arc/shell/info-hash' to a string."
+  (let ((branch  (gethash "branch"  yandex-arc/shell/info-hash))
+        (summary (gethash "summary" yandex-arc/shell/info-hash)))
     (concat "Head: [" branch "] " summary)))
 
 
 (defun yandex-arc/insert-status-section ()
-  "Inserts a section with information from `yandex-arc/status-hash'."
+  "Inserts a section with information from `yandex-arc/shell/status-hash'."
   (let ((unstaged (yandex-arc/get-changed-paths "changed"))
         (staged   (yandex-arc/get-changed-paths  "staged")))
     (when (> (length unstaged) 0)
@@ -90,12 +90,12 @@
 
 
 (defun yandex-arc/get-changed-paths (location)
-  "Extracts array of (un)staged changed paths `yandex-arc/status-hash'.
+  "Extracts array of (un)staged changed paths `yandex-arc/shell/status-hash'.
 
 LOCATION can be \"changed\" or \"staged\""
   (seq-map
    (lambda (file-description) (gethash "path" file-description))
-   (gethash location (gethash "status" yandex-arc/status-hash))))
+   (gethash location (gethash "status" yandex-arc/shell/status-hash))))
 
 
 (defun yandex-arc/get-file-name-from-file-section ()
@@ -113,7 +113,7 @@ LOCATION can be \"changed\" or \"staged\""
   "Stages file at point."
   (interactive (list (yandex-arc/get-file-name-from-file-section)))
   (when file-name
-    (yandex-arc/stage file-name)
+    (yandex-arc/shell/stage file-name)
     (yandex-arc/update-arc-buffer)))
 
 
@@ -121,5 +121,5 @@ LOCATION can be \"changed\" or \"staged\""
   "Unstages file at point."
   (interactive (list (yandex-arc/get-file-name-from-file-section)))
   (when file-name
-    (yandex-arc/unstage file-name)
+    (yandex-arc/shell/unstage file-name)
     (yandex-arc/update-arc-buffer)))
