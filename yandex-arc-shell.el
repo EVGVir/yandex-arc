@@ -40,3 +40,11 @@
 
 (defun yandex-arc/update-root ()
   (setq yandex-arc/root (string-trim (yandex-arc/run-arc-text "root"))))
+
+
+(defun yandex-arc/stage (file-name)
+  (yandex-arc/run-arc-text "add" file-name))
+
+
+(defun yandex-arc/unstage (file-name)
+  (yandex-arc/run-arc-text "reset" "HEAD" file-name))
