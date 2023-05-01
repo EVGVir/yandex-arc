@@ -41,9 +41,8 @@
     (let ((inhibit-read-only t))
       (erase-buffer)
       (magit-insert-section (yandex-arc/root-section)
-        (magit-insert-section-body
-          (yandex-arc/print-head-info)
-          (yandex-arc/insert-status-section))))))
+        (yandex-arc/print-head-info)
+        (yandex-arc/insert-status-section)))))
 
 
 (defun yandex-arc/print-head-info ()
@@ -67,26 +66,38 @@
       (insert ?\n)
       (yandex-arc/insert-files-section
        (format "Unstaged changes (%d)" (length unstaged))
-       unstaged))
+       unstaged :unstaged))
     (when (> (length staged) 0)
       (insert ?\n)
       (yandex-arc/insert-files-section
        (format "Staged changes (%d)" (length staged))
-       staged))))
+       staged :staged))))
 
 
-(defun yandex-arc/insert-files-section (heading file-names)
+(defun yandex-arc/insert-files-section (heading file-names diff-type)
+  "Inserts a section with information about files FILE-NAMES. DIFF-TYPE controls
+the diff type displayed for each file.
+
+DIFF-TYPE one of:
+* nil       - no diff should be displayed for files.
+* :staged   - diff between HEAD and index must be displayed.
+* :unstaged - diff between working tree and index must be displayed."
   (magit-insert-section (yandex-arc/files-section)
     (magit-insert-heading heading)
-    (magit-insert-section-body
-      (dolist (file-name file-names)
-        (yandex-arc/insert-file-section file-name)))))
+    (dolist (file-name file-names)
+      (yandex-arc/insert-file-section
+       file-name
+       (yandex-arc/diff-file file-name diff-type)))))) ; TODO: Calculate diff lazy (pass lambda?)
 
 
-(defun yandex-arc/insert-file-section (file-name)
+(defun yandex-arc/insert-file-section (file-name diff)
   "Insert a section with a file."
-  (magit-insert-section (yandex-arc/file-section file-name)
-    (magit-insert-heading file-name)))
+  (magit-insert-section (yandex-arc/file-section file-name t)
+    (magit-insert-heading file-name)
+    (magit-insert-section-body
+      (when diff
+        (save-excursion (insert diff))
+        (magit-wash-sequence 'yandex-arc/file-section-washer)))))
 
 
 (defun yandex-arc/get-changed-paths (location)
@@ -123,3 +134,29 @@ LOCATION can be \"changed\" or \"staged\""
   (when file-name
     (yandex-arc/shell/unstage file-name)
     (yandex-arc/update-arc-buffer)))
+
+
+(defun yandex-arc/diff-file (file-name diff-type)
+  (cond
+   ((eq diff-type nil) nill)
+   ((eq diff-type :staged)   (yandex-arc/shell/diff-staged   file-name))
+   ((eq diff-type :unstaged) (yandex-arc/shell/diff-unstaged file-name))))
+
+
+(defun yandex-arc/file-section-washer ()
+  (unless (eobp)
+    (delete-region (line-beginning-position) (1+ (line-end-position 2)))
+    (let ((hunk-counter 0))
+      (while (not (eobp))
+        (when (not (looking-at-p "@@")) (error "Current line of the diff is not start of a hunk"))
+        (magit-insert-section (yandex-arc/diff-hunk-section hunk-counter)
+          (magit-wash-sequence 'yandex-arc/diff-hunk-section-washer))
+        (setq hunk-counter (1+ hunk-counter))))))
+
+
+(defun yandex-arc/diff-hunk-section-washer ()
+  (forward-line)
+  (magit-insert-heading)
+  (forward-line)
+  (while (and (not (eobp)) (not (looking-at-p "@@")))
+    (forward-line)))

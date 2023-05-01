@@ -48,3 +48,13 @@
 
 (defun yandex-arc/shell/unstage (file-name)
   (yandex-arc/shell/run-arc-text "reset" "HEAD" file-name))
+
+
+(defun yandex-arc/shell/diff-unstaged (file-name)
+  "Returns diff between working tree and index."
+  (yandex-arc/shell/run-arc-text "diff" "--color" "never" file-name))
+
+
+(defun yandex-arc/shell/diff-staged (file-name)
+  "Returns diff index and HEAD."
+  (yandex-arc/shell/run-arc-text "diff" "--color" "never" "--cached" file-name))
