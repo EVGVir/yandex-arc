@@ -8,6 +8,11 @@
   (yandex-arc/mode-init))
 
 
+(defvar-keymap yandex-arc-mode-map
+  :doc "Keymap for `yandex-arc-mode'."
+  "RET" 'yandex-arc/visit-file)
+
+
 (define-derived-mode yandex-arc-mode magit-section-mode "arc"
   "Yandex Arc Major Mode."
   (setq revert-buffer-function
@@ -56,20 +61,30 @@
   "Inserts a section with information from `yandex-arc/status-hash'."
   (let ((unstaged (yandex-arc/get-changed-paths "changed"))
         (staged   (yandex-arc/get-changed-paths  "staged")))
-    (if (> (length unstaged) 0)
-        (progn
-          (insert ?\n)
-          (magit-insert-section (yandex-arc/files-section)
-            (magit-insert-heading (format "Unstaged changes (%d)" (length unstaged)))
-            (magit-insert-section-body
-              (insert (string-join unstaged ?\n) ?\n)))))
-    (if (> (length staged) 0)
-        (progn
-          (insert ?\n)
-          (magit-insert-section (yandex-arc/files-section)
-            (magit-insert-heading (format "Staged changes (%d)" (length staged)))
-            (magit-insert-section-body
-              (insert (string-join staged ?\n) ?\n)))))))
+    (when (> (length unstaged) 0)
+      (insert ?\n)
+      (yandex-arc/insert-files-section
+       (format "Unstaged changes (%d)" (length unstaged))
+       unstaged))
+    (when (> (length staged) 0)
+      (insert ?\n)
+      (yandex-arc/insert-files-section
+       (format "Staged changes (%d)" (length staged))
+       staged))))
+
+
+(defun yandex-arc/insert-files-section (heading file-names)
+  (magit-insert-section (yandex-arc/files-section)
+    (magit-insert-heading heading)
+    (magit-insert-section-body
+      (dolist (file-name file-names)
+        (yandex-arc/insert-file-section file-name)))))
+
+
+(defun yandex-arc/insert-file-section (file-name)
+  "Insert a section with a file."
+  (magit-insert-section (yandex-arc/file-section file-name)
+    (magit-insert-heading file-name)))
 
 
 (defun yandex-arc/get-changed-paths (location)
@@ -79,3 +94,11 @@ LOCATION can be \"changed\" or \"staged\""
   (seq-map
    (lambda (file-description) (gethash "path" file-description))
    (gethash location (gethash "status" yandex-arc/status-hash))))
+
+
+(defun yandex-arc/visit-file (file-name)
+  "Visits file at point"
+  (interactive
+   (list (magit-section-value-if 'yandex-arc/file-section)))
+  (when file-name
+    (find-file file-name)))
