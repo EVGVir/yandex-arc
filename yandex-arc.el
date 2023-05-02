@@ -10,9 +10,9 @@
 
 (defvar-keymap yandex-arc-mode-map
   :doc "Keymap for `yandex-arc-mode'."
-  "RET" 'yandex-arc/visit-file
-  "s"   'yandex-arc/stage-file
-  "u"   'yandex-arc/unstage-file)
+  "RET" 'yandex-arc/actions/visit-file
+  "s"   'yandex-arc/actions/stage-file
+  "u"   'yandex-arc/actions/unstage-file)
 
 
 (define-derived-mode yandex-arc-mode magit-section-mode "arc"
@@ -120,29 +120,6 @@ LOCATION can be \"changed\" or \"staged\""
 
 (defun yandex-arc/get-file-name-from-file-section ()
   (magit-section-value-if 'yandex-arc/file-section))
-
-
-(defun yandex-arc/visit-file (file-name)
-  "Visits file at point."
-  (interactive (list (yandex-arc/get-file-name-from-file-section)))
-  (when file-name
-    (find-file file-name)))
-
-
-(defun yandex-arc/stage-file (file-name)
-  "Stages file at point."
-  (interactive (list (yandex-arc/get-file-name-from-file-section)))
-  (when file-name
-    (yandex-arc/shell/stage file-name)
-    (yandex-arc/update-arc-buffer)))
-
-
-(defun yandex-arc/unstage-file (file-name)
-  "Unstages file at point."
-  (interactive (list (yandex-arc/get-file-name-from-file-section)))
-  (when file-name
-    (yandex-arc/shell/unstage file-name)
-    (yandex-arc/update-arc-buffer)))
 
 
 (defun yandex-arc/split-diff (diff)
