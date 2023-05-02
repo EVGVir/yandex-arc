@@ -50,6 +50,15 @@
   (yandex-arc/shell/run-arc-text "reset" "HEAD" file-name))
 
 
+(defun yandex-arc/shell/diff-file (file-name diff-type)
+  "Returns diff for FILE as a string. DIFF-TYPE controls the diff type:
+* :staged   - diff between HEAD and index.
+* :unstaged - diff between working tree and index."
+  (cond
+   ((eq diff-type :staged)   (yandex-arc/shell/diff-staged   file-name))
+   ((eq diff-type :unstaged) (yandex-arc/shell/diff-unstaged file-name))))
+
+
 (defun yandex-arc/shell/diff-unstaged (file-name)
   "Returns diff between working tree and index."
   (yandex-arc/shell/run-arc-text "diff" "--color" "never" file-name))

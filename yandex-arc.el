@@ -21,6 +21,12 @@
         (lambda (ignore-auto noconfirm) (yandex-arc/update-arc-buffer))))
 
 
+(defclass yandex-arc/root-section      (magit-section) ())
+(defclass yandex-arc/files-section     (magit-section) ())
+(defclass yandex-arc/file-section      (magit-section) ())
+(defclass yandex-arc/diff-hunk-section (magit-section) ())
+
+
 (defun yandex-arc/mode-init ()
   "Initializes Yandex Arc Major Mode"
   (yandex-arc/shell/update-root)
@@ -75,29 +81,32 @@
 
 
 (defun yandex-arc/insert-files-section (heading file-names diff-type)
-  "Inserts a section with information about files FILE-NAMES. DIFF-TYPE controls
-the diff type displayed for each file.
-
-DIFF-TYPE one of:
-* nil       - no diff should be displayed for files.
-* :staged   - diff between HEAD and index must be displayed.
-* :unstaged - diff between working tree and index must be displayed."
+  "Inserts a section with information about files FILE-NAMES. If
+DIFF-TYPE is not nil then diff is displayed for each
+file. Possible values of DIFF-TYPE are described in
+`yandex-arc/shell/diff-file'."
   (magit-insert-section (yandex-arc/files-section)
     (magit-insert-heading heading)
     (dolist (file-name file-names)
-      (yandex-arc/insert-file-section
-       file-name
-       (yandex-arc/diff-file file-name diff-type)))))) ; TODO: Calculate diff lazy (pass lambda?)
+      (yandex-arc/insert-file-section file-name diff-type))))
 
 
-(defun yandex-arc/insert-file-section (file-name diff)
+(defun yandex-arc/insert-file-section (file-name diff-type)
   "Insert a section with a file."
   (magit-insert-section (yandex-arc/file-section file-name t)
     (magit-insert-heading file-name)
     (magit-insert-section-body
-      (when diff
-        (save-excursion (insert diff))
-        (magit-wash-sequence 'yandex-arc/file-section-washer)))))
+      (when diff-type
+        (yandex-arc/insert-diff-hunk-sections
+         (yandex-arc/split-diff (yandex-arc/shell/diff-file file-name diff-type)))))))
+
+
+(defun yandex-arc/insert-diff-hunk-sections (hunks)
+  (dolist (hunk hunks)
+    (magit-insert-section (yandex-arc/diff-hunk-section)
+      (let ((header-end (1+ (string-match "\n" hunk))))
+        (magit-insert-heading (substring hunk 0 header-end))
+        (insert (substring hunk header-end nil))))))
 
 
 (defun yandex-arc/get-changed-paths (location)
@@ -136,27 +145,15 @@ LOCATION can be \"changed\" or \"staged\""
     (yandex-arc/update-arc-buffer)))
 
 
-(defun yandex-arc/diff-file (file-name diff-type)
-  (cond
-   ((eq diff-type nil) nill)
-   ((eq diff-type :staged)   (yandex-arc/shell/diff-staged   file-name))
-   ((eq diff-type :unstaged) (yandex-arc/shell/diff-unstaged file-name))))
-
-
-(defun yandex-arc/file-section-washer ()
-  (unless (eobp)
-    (delete-region (line-beginning-position) (1+ (line-end-position 2)))
-    (let ((hunk-counter 0))
-      (while (not (eobp))
-        (when (not (looking-at-p "@@")) (error "Current line of the diff is not start of a hunk"))
-        (magit-insert-section (yandex-arc/diff-hunk-section hunk-counter)
-          (magit-wash-sequence 'yandex-arc/diff-hunk-section-washer))
-        (setq hunk-counter (1+ hunk-counter))))))
-
-
-(defun yandex-arc/diff-hunk-section-washer ()
-  (forward-line)
-  (magit-insert-heading)
-  (forward-line)
-  (while (and (not (eobp)) (not (looking-at-p "@@")))
-    (forward-line)))
+(defun yandex-arc/split-diff (diff)
+  "Splits DIFF into hunks."
+  (with-temp-buffer
+    (insert diff)
+    (goto-char 0)
+    (re-search-forward "^@@")
+    (let (result
+          (begin (line-beginning-position)))
+      (while (re-search-forward "^@@" nil t)
+        (setq result (append result (list (buffer-substring begin (line-beginning-position)))))
+        (setq begin (line-beginning-position)))
+      (setq result (append result (list (buffer-substring begin (buffer-end 1))))))))
