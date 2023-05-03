@@ -72,3 +72,15 @@
 (defun yandex-arc/shell/diff-staged (file-name)
   "Returns diff index and HEAD."
   (yandex-arc/shell/run-arc-text "diff" "--color" "never" "--cached" file-name))
+
+
+(defun yandex-arc/shell/stash-push ()
+  "Puts everything into the stash."
+  (yandex-arc/shell/run-arc-text "stash" "push"))
+
+
+(defun yandex-arc/shell/stash-apply (stash-num --index)
+  "Apply stash entry under number STASH-NUM, not removing it from
+stack. If --INDEX is t then index state is restored."
+  (yandex-arc/shell/run-arc-text
+   "stash" "apply" (number-to-string stash-num) (when --index "--index")))

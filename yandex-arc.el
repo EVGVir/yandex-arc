@@ -2,6 +2,7 @@
 
 (require 'magit)
 (require 'magit-section)
+(require 'transient)
 
 
 (defun yandex-arc ()
@@ -14,7 +15,8 @@
   :doc "Keymap for `yandex-arc-mode'."
   "RET" 'yandex-arc/actions/visit-file
   "s"   'yandex-arc/actions/stage-file
-  "u"   'yandex-arc/actions/unstage-file)
+  "u"   'yandex-arc/actions/unstage-file
+  "z"   'yandex-arc/actions/stash-transient)
 
 
 (define-derived-mode yandex-arc-mode magit-section-mode "arc"
