@@ -61,7 +61,9 @@
   "Converts `yandex-arc/shell/info-hash' to a string."
   (let ((branch  (gethash "branch"  yandex-arc/shell/info-hash))
         (summary (gethash "summary" yandex-arc/shell/info-hash)))
-    (concat "Head: [" branch "] " summary)))
+    (concat "Head:     "
+            (propertize branch 'font-lock-face 'magit-branch-local)
+            " " summary)))
 
 
 (defun yandex-arc/insert-status-section ()
@@ -70,14 +72,10 @@
         (staged   (yandex-arc/get-changed-paths  "staged")))
     (when (> (length unstaged) 0)
       (insert ?\n)
-      (yandex-arc/insert-files-section
-       (format "Unstaged changes (%d)" (length unstaged))
-       unstaged :unstaged))
+      (yandex-arc/insert-files-section "Unstaged changes" unstaged :unstaged))
     (when (> (length staged) 0)
       (insert ?\n)
-      (yandex-arc/insert-files-section
-       (format "Staged changes (%d)" (length staged))
-       staged :staged))))
+      (yandex-arc/insert-files-section "Staged changes" staged :staged))))
 
 
 (defun yandex-arc/insert-files-section (heading file-names diff-type)
@@ -86,7 +84,10 @@ DIFF-TYPE is not nil then diff is displayed for each
 file. Possible values of DIFF-TYPE are described in
 `yandex-arc/shell/diff-file'."
   (magit-insert-section (yandex-arc/files-section)
-    (magit-insert-heading heading)
+    (magit-insert-heading
+      (propertize heading 'font-lock-face 'magit-section-heading) " "
+      (propertize (concat "(" (number-to-string (length file-names)) ")")
+                  'font-lock-face 'magit-section-child-count))
     (dolist (file-name file-names)
       (yandex-arc/insert-file-section file-name diff-type))))
 
@@ -94,7 +95,8 @@ file. Possible values of DIFF-TYPE are described in
 (defun yandex-arc/insert-file-section (file-name diff-type)
   "Insert a section with a file."
   (magit-insert-section (yandex-arc/file-section file-name t)
-    (magit-insert-heading file-name)
+    (magit-insert-heading
+      (propertize file-name 'font-lock-face 'magit-diff-file-heading))
     (magit-insert-section-body
       (when diff-type
         (yandex-arc/insert-diff-hunk-sections
@@ -105,7 +107,8 @@ file. Possible values of DIFF-TYPE are described in
   (dolist (hunk hunks)
     (magit-insert-section (yandex-arc/diff-hunk-section)
       (let ((header-end (1+ (string-match "\n" hunk))))
-        (magit-insert-heading (substring hunk 0 header-end))
+        (magit-insert-heading
+          (propertize (substring hunk 0 header-end) 'font-lock-face 'magit-diff-hunk-heading))
         (insert (substring hunk header-end nil))))))
 
 
