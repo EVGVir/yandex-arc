@@ -1,6 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 
+(require 'magit)
 (require 'magit-section)
+
 
 (defun yandex-arc ()
   "Starts Yandex Arc Major Mode in the current directory."
@@ -21,10 +23,8 @@
         (lambda (ignore-auto noconfirm) (yandex-arc/update-arc-buffer))))
 
 
-(defclass yandex-arc/root-section      (magit-section) ())
-(defclass yandex-arc/files-section     (magit-section) ())
-(defclass yandex-arc/file-section      (magit-section) ())
-(defclass yandex-arc/diff-hunk-section (magit-section) ())
+(defclass yandex-arc/root-section  (magit-section) ())
+(defclass yandex-arc/files-section (magit-section) ())
 
 
 (defun yandex-arc/mode-init ()
@@ -94,7 +94,7 @@ file. Possible values of DIFF-TYPE are described in
 
 (defun yandex-arc/insert-file-section (file-name diff-type)
   "Insert a section with a file."
-  (magit-insert-section (yandex-arc/file-section file-name t)
+  (magit-insert-section (magit-file-section file-name t)
     (magit-insert-heading
       (propertize file-name 'font-lock-face 'magit-diff-file-heading))
     (magit-insert-section-body
@@ -105,10 +105,9 @@ file. Possible values of DIFF-TYPE are described in
 
 (defun yandex-arc/insert-diff-hunk-sections (hunks)
   (dolist (hunk hunks)
-    (magit-insert-section (yandex-arc/diff-hunk-section)
+    (magit-insert-section (magit-hunk-section)
       (let ((header-end (1+ (string-match "\n" hunk))))
-        (magit-insert-heading
-          (propertize (substring hunk 0 header-end) 'font-lock-face 'magit-diff-hunk-heading))
+        (magit-insert-heading (substring hunk 0 header-end))
         (insert (substring hunk header-end nil))))))
 
 
@@ -122,7 +121,7 @@ LOCATION can be \"changed\" or \"staged\""
 
 
 (defun yandex-arc/get-file-name-from-file-section ()
-  (magit-section-value-if 'yandex-arc/file-section))
+  (magit-section-value-if 'magit-file-section))
 
 
 (defun yandex-arc/split-diff (diff)
