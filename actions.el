@@ -37,9 +37,9 @@
     ("i" "index"    yandex-arc/actions/not-implemented-message)
     ("w" "worktree" yandex-arc/actions/not-implemented-message)]
    ["Use"
-    ("a" "Apply the last stash" yandex-arc/actions/stash-apply)
-    ("p" "Pop"                  yandex-arc/actions/not-implemented-message)
-    ("k" "Drop"                 yandex-arc/actions/not-implemented-message)]])
+    ("a" "Apply" yandex-arc/actions/stash-apply)
+    ("p" "Pop"   yandex-arc/actions/not-implemented-message)
+    ("k" "Drop"  yandex-arc/actions/not-implemented-message)]])
 
 
 (defun yandex-arc/actions/stash-push ()
@@ -50,7 +50,12 @@
 
 
 (defun yandex-arc/actions/stash-apply ()
-  "Applies the stash from the top."
+  "Applies the stash at point."
   (interactive)
-  (yandex-arc/shell/stash-apply 0 t)
-  (yandex-arc/update-arc-buffer))
+  (let ((stash-index (magit-section-value-if 'yandex-arc/stash-section)))
+    (if stash-index
+        (progn
+          (yandex-arc/shell/stash-apply stash-index t)
+          (yandex-arc/update-arc-buffer))
+      (ding)
+      (message "No stash selected."))))
