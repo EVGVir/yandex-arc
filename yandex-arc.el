@@ -69,7 +69,7 @@
         (summary (gethash "summary" yandex-arc/shell/info-hash)))
     (concat "Head:     "
             (propertize branch 'font-lock-face 'magit-branch-local)
-            " " summary)))
+            " " summary "\n")))
 
 
 (defun yandex-arc/insert-status-section ()
@@ -77,10 +77,8 @@
   (let ((unstaged (yandex-arc/get-changed-paths "changed"))
         (staged   (yandex-arc/get-changed-paths  "staged")))
     (when (> (length unstaged) 0)
-      (insert ?\n)
       (yandex-arc/insert-files-section "Unstaged changes" unstaged :unstaged))
     (when (> (length staged) 0)
-      (insert ?\n)
       (yandex-arc/insert-files-section "Staged changes" staged :staged))))
 
 
@@ -95,7 +93,8 @@ file. Possible values of DIFF-TYPE are described in
       (propertize (concat "(" (number-to-string (length file-names)) ")")
                   'font-lock-face 'magit-section-child-count))
     (dolist (file-name file-names)
-      (yandex-arc/insert-file-section file-name diff-type))))
+      (yandex-arc/insert-file-section file-name diff-type))
+    (insert ?\n)))
 
 
 (defun yandex-arc/insert-file-section (file-name diff-type)
