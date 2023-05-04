@@ -13,7 +13,7 @@
 
 
 (defvar-local yandex-arc/shell/root nil
-  "Value returned by the most recent call to `arc root`")
+  "Value returned by the most recent call to `arc root`.")
 
 
 (defun yandex-arc/shell/run-arc (&rest args)
@@ -72,6 +72,11 @@
 (defun yandex-arc/shell/diff-staged (file-name)
   "Returns diff index and HEAD."
   (yandex-arc/shell/run-arc-text "diff" "--color" "never" "--cached" file-name))
+
+
+(defun yandex-arc/shell/stash-list ()
+  "List available entries in the stash."
+  (yandex-arc/shell/run-arc-json "stash" "list"))
 
 
 (defun yandex-arc/shell/stash-push ()

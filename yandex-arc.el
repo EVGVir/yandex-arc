@@ -25,8 +25,10 @@
         (lambda (ignore-auto noconfirm) (yandex-arc/update-arc-buffer))))
 
 
-(defclass yandex-arc/root-section  (magit-section) ())
-(defclass yandex-arc/files-section (magit-section) ())
+(defclass yandex-arc/root-section    (magit-section) ())
+(defclass yandex-arc/files-section   (magit-section) ())
+(defclass yandex-arc/stashes-section (magit-section) ())
+(defclass yandex-arc/stash-section   (magit-section) ())
 
 
 (defun yandex-arc/mode-init ()
@@ -41,16 +43,18 @@
 (defun yandex-arc/update-arc-buffer ()
   (yandex-arc/shell/update-status)
   (yandex-arc/shell/update-info)
-  (yandex-arc/redraw-arc-buffer))
+  (yandex-arc/redraw-arc-buffer
+   (yandex-arc/shell/stash-list)))
 
 
-(defun yandex-arc/redraw-arc-buffer ()
+(defun yandex-arc/redraw-arc-buffer (stash-info-hash)
   (save-excursion
     (let ((inhibit-read-only t))
       (erase-buffer)
       (magit-insert-section (yandex-arc/root-section)
         (yandex-arc/print-head-info)
-        (yandex-arc/insert-status-section)))))
+        (yandex-arc/insert-status-section)
+        (yandex-arc/insert-stashes-section (yandex-arc/shell/stash-list))))))
 
 
 (defun yandex-arc/print-head-info ()
@@ -138,3 +142,27 @@ LOCATION can be \"changed\" or \"staged\""
         (setq result (append result (list (buffer-substring begin (line-beginning-position)))))
         (setq begin (line-beginning-position)))
       (setq result (append result (list (buffer-substring begin (buffer-end 1))))))))
+
+
+(defun yandex-arc/insert-stashes-section (stash-info)
+  (let ((stashes-num (length stash-info)))
+    (when (> stashes-num 0)
+      (insert ?\n)
+      (magit-insert-section (yandex-arc/stashes-section nil t)
+        (magit-insert-heading
+          (propertize "Stashes" 'font-lock-face 'magit-section-heading) " "
+          (propertize (concat "(" (number-to-string stashes-num) ")")
+                      'font-lock-face 'magit-section-child-count))
+        (dotimes (stash-ix stashes-num)
+          (yandex-arc/insert-stash-section
+           stash-ix
+           (gethash "description" (elt stash-info stash-ix))))
+        (insert ?\n)))))
+
+
+(defun yandex-arc/insert-stash-section (index description)
+  (magit-insert-section (yandex-arc/stash-section index)
+    (magit-insert-heading
+       (propertize (format "stash@{%d}" index) 'font-lock-face 'magit-hash)
+       " " description "\n")))
+
