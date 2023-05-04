@@ -4,14 +4,6 @@
   "Yandex Arc binary.")
 
 
-(defvar-local yandex-arc/shell/status-hash nil
-  "Value returned by the most recent call to `arc status`.")
-
-
-(defvar-local yandex-arc/shell/info-hash nil
-  "Value returned by the most recent call to `arc info`.")
-
-
 (defvar-local yandex-arc/shell/root nil
   "Value returned by the most recent call to `arc root`.")
 
@@ -35,16 +27,16 @@
     (buffer-string)))
 
 
-(defun yandex-arc/shell/update-status ()
-  (setq yandex-arc/shell/status-hash (yandex-arc/shell/run-arc-json "status")))
-
-
-(defun yandex-arc/shell/update-info ()
-  (setq yandex-arc/shell/info-hash (yandex-arc/shell/run-arc-json "info")))
-
-
 (defun yandex-arc/shell/update-root ()
   (setq yandex-arc/shell/root (string-trim (yandex-arc/shell/run-arc-text "root"))))
+
+
+(defun yandex-arc/shell/status ()
+  (yandex-arc/shell/run-arc-json "status"))
+
+
+(defun yandex-arc/shell/info ()
+  (yandex-arc/shell/run-arc-json "info"))
 
 
 (defun yandex-arc/shell/stage (file-name)

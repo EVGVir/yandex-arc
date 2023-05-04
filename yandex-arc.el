@@ -41,41 +41,36 @@
 
 
 (defun yandex-arc/update-arc-buffer ()
-  (yandex-arc/shell/update-status)
-  (yandex-arc/shell/update-info)
   (yandex-arc/redraw-arc-buffer
+   (yandex-arc/shell/info)
+   (yandex-arc/shell/status)
    (yandex-arc/shell/stash-list)))
 
 
-(defun yandex-arc/redraw-arc-buffer (stash-info-hash)
+(defun yandex-arc/redraw-arc-buffer (info status stash-info)
   (save-excursion
     (let ((inhibit-read-only t))
       (erase-buffer)
       (magit-insert-section (yandex-arc/root-section)
-        (yandex-arc/print-head-info)
-        (yandex-arc/insert-status-section)
+        (yandex-arc/print-head-info info)
+        (yandex-arc/insert-status-section status)
         (yandex-arc/insert-stashes-section (yandex-arc/shell/stash-list))))))
 
 
-(defun yandex-arc/print-head-info ()
+(defun yandex-arc/print-head-info (info)
   "Adds information about HEAD to the buffer."
-  (insert (yandex-arc/info-to-str))
-  (insert ?\n))
-
-
-(defun yandex-arc/info-to-str ()
-  "Converts `yandex-arc/shell/info-hash' to a string."
-  (let ((branch  (gethash "branch"  yandex-arc/shell/info-hash))
-        (summary (gethash "summary" yandex-arc/shell/info-hash)))
-    (concat "Head:     "
+  (let ((branch  (gethash "branch"  info))
+        (summary (gethash "summary" info)))
+    (insert "Head:     "
             (propertize branch 'font-lock-face 'magit-branch-local)
-            " " summary "\n")))
+            " " summary "\n\n")))
 
 
-(defun yandex-arc/insert-status-section ()
-  "Inserts a section with information from `yandex-arc/shell/status-hash'."
-  (let ((unstaged (yandex-arc/get-changed-paths "changed"))
-        (staged   (yandex-arc/get-changed-paths  "staged")))
+(defun yandex-arc/insert-status-section (status)
+  "Inserts a section with information about staged and unstaged
+files taken from STATUS."
+  (let ((unstaged (yandex-arc/get-changed-paths status "changed"))
+        (staged   (yandex-arc/get-changed-paths status  "staged")))
     (when (> (length unstaged) 0)
       (yandex-arc/insert-files-section "Unstaged changes" unstaged :unstaged))
     (when (> (length staged) 0)
@@ -116,13 +111,13 @@ file. Possible values of DIFF-TYPE are described in
         (insert (substring hunk header-end nil))))))
 
 
-(defun yandex-arc/get-changed-paths (location)
-  "Extracts array of (un)staged changed paths `yandex-arc/shell/status-hash'.
+(defun yandex-arc/get-changed-paths (status location)
+  "Extracts array of (un)staged changed paths from STATUS.
 
 LOCATION can be \"changed\" or \"staged\""
   (seq-map
    (lambda (file-description) (gethash "path" file-description))
-   (gethash location (gethash "status" yandex-arc/shell/status-hash))))
+   (gethash location (gethash "status" status))))
 
 
 (defun yandex-arc/get-file-name-from-file-section ()
