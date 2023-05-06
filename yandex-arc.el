@@ -88,9 +88,8 @@ file. Possible values of DIFF-TYPE are described in
 `yandex-arc/shell/diff-file'."
   (magit-insert-section (yandex-arc/files-section)
     (magit-insert-heading
-      (propertize heading 'font-lock-face 'magit-section-heading) " "
-      (propertize (concat "(" (number-to-string (length file-names)) ")")
-                  'font-lock-face 'magit-section-child-count))
+      (propertize heading 'font-lock-face 'magit-section-heading)
+      ":") ; Column at the end of the heading is replaced on subsections number.
     (dolist (file-name file-names)
       (yandex-arc/insert-file-section file-name diff-type))
     (insert ?\n)))
@@ -153,12 +152,10 @@ LOCATION can be \"changed\", \"staged\" or \"untracked\"."
 (defun yandex-arc/insert-stashes-section (stash-info)
   (let ((stashes-num (length stash-info)))
     (when (> stashes-num 0)
-      (insert ?\n)
       (magit-insert-section (yandex-arc/stashes-section nil t)
         (magit-insert-heading
-          (propertize "Stashes" 'font-lock-face 'magit-section-heading) " "
-          (propertize (concat "(" (number-to-string stashes-num) ")")
-                      'font-lock-face 'magit-section-child-count))
+          (propertize "Stashes" 'font-lock-face 'magit-section-heading)
+          ":") ; Column at the end of the heading is replaced on subsections number.
         (dotimes (stash-ix stashes-num)
           (yandex-arc/insert-stash-section
            stash-ix
