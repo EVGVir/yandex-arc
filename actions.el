@@ -8,26 +8,30 @@
 
 (defun yandex-arc/actions/visit-file (file-name)
   "Visits file at point."
-  (interactive (list (yandex-arc/get-file-name-from-file-section)))
+  (interactive (list (magit-section-value-if 'magit-file-section)))
   (when file-name
     (find-file file-name)))
 
 
 ;; Staging
-(defun yandex-arc/actions/stage-file (file-name)
-  "Stages file at point."
-  (interactive (list (yandex-arc/get-file-name-from-file-section)))
-  (when file-name
-    (yandex-arc/shell/stage file-name)
-    (yandex-arc/update-arc-buffer)))
+(defun yandex-arc/actions/stage-file ()
+  "Stages file(s) at point."
+  (interactive)
+  (let ((file-names (yandex-arc/get-file-names-from-section-at-point)))
+    (dolist (file-name file-names)
+      (yandex-arc/shell/stage file-name))
+    (when (length file-names)
+      (yandex-arc/update-arc-buffer))))
 
 
-(defun yandex-arc/actions/unstage-file (file-name)
-  "Unstages file at point."
-  (interactive (list (yandex-arc/get-file-name-from-file-section)))
-  (when file-name
-    (yandex-arc/shell/unstage file-name)
-    (yandex-arc/update-arc-buffer)))
+(defun yandex-arc/actions/unstage-file ()
+  "Unstages file(s) at point."
+  (interactive)
+  (let ((file-names (yandex-arc/get-file-names-from-section-at-point)))
+    (dolist (file-name file-names)
+      (yandex-arc/shell/unstage file-name))
+    (when (length file-names)
+      (yandex-arc/update-arc-buffer))))
 
 
 ;; Stashing

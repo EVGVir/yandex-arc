@@ -127,8 +127,13 @@ LOCATION can be \"changed\", \"staged\" or \"untracked\"."
    (gethash location (gethash "status" status))))
 
 
-(defun yandex-arc/get-file-name-from-file-section ()
-  (magit-section-value-if 'magit-file-section))
+(defun yandex-arc/get-file-names-from-section-at-point ()
+  (let ((section (magit-current-section)))
+    (cond ((magit-section-match 'magit-file-section section)
+           (list (oref section value)))
+          ((magit-section-match 'yandex-arc/files-section section)
+           (seq-map (lambda (section) (oref section value))
+                    (oref section children))))))
 
 
 (defun yandex-arc/split-diff (diff)
