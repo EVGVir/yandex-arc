@@ -69,8 +69,11 @@
 (defun yandex-arc/insert-status-section (status)
   "Inserts a section with information about staged and unstaged
 files taken from STATUS."
-  (let ((unstaged (yandex-arc/get-changed-paths status "changed"))
-        (staged   (yandex-arc/get-changed-paths status  "staged")))
+  (let ((untracked (yandex-arc/get-changed-paths status "untracked"))
+        (unstaged  (yandex-arc/get-changed-paths status "changed"))
+        (staged    (yandex-arc/get-changed-paths status "staged")))
+    (when (> (length untracked) 0)
+      (yandex-arc/insert-files-section "Untracked files" untracked nil))
     (when (> (length unstaged) 0)
       (yandex-arc/insert-files-section "Unstaged changes" unstaged :unstaged))
     (when (> (length staged) 0)
@@ -95,12 +98,15 @@ file. Possible values of DIFF-TYPE are described in
 (defun yandex-arc/insert-file-section (file-name diff-type)
   "Insert a section with a file."
   (magit-insert-section (magit-file-section file-name t)
-    (magit-insert-heading
-      (propertize file-name 'font-lock-face 'magit-diff-file-heading))
-    (magit-insert-section-body
-      (when diff-type
-        (yandex-arc/insert-diff-hunk-sections
-         (yandex-arc/split-diff (yandex-arc/shell/diff-file file-name diff-type)))))))
+    (if diff-type
+        (progn
+          (magit-insert-heading
+            (propertize file-name 'font-lock-face 'magit-diff-file-heading))
+          (magit-insert-section-body
+            (yandex-arc/insert-diff-hunk-sections
+             (yandex-arc/split-diff (yandex-arc/shell/diff-file file-name diff-type))))
+          )
+      (insert (propertize file-name 'font-lock-face 'magit-filename) ?\n))))
 
 
 (defun yandex-arc/insert-diff-hunk-sections (hunks)
@@ -114,7 +120,7 @@ file. Possible values of DIFF-TYPE are described in
 (defun yandex-arc/get-changed-paths (status location)
   "Extracts array of (un)staged changed paths from STATUS.
 
-LOCATION can be \"changed\" or \"staged\""
+LOCATION can be \"changed\", \"staged\" or \"untracked\"."
   (seq-map
    (lambda (file-description) (gethash "path" file-description))
    (gethash location (gethash "status" status))))
