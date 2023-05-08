@@ -46,10 +46,10 @@
     ("k" "Drop"  yandex-arc/actions/not-implemented-message)]])
 
 
-(defun yandex-arc/actions/stash-push ()
+(defun yandex-arc/actions/stash-push (message)
   "Puts everything into the stash."
-  (interactive)
-  (message (string-trim (yandex-arc/shell/stash-push)))
+  (interactive "MStash message: ")
+  (message (string-trim (yandex-arc/shell/stash-push message)))
   (yandex-arc/update-arc-buffer))
 
 

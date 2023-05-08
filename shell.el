@@ -71,9 +71,11 @@
   (yandex-arc/shell/run-arc-json "stash" "list"))
 
 
-(defun yandex-arc/shell/stash-push ()
+(defun yandex-arc/shell/stash-push (message)
   "Puts everything into the stash."
-  (yandex-arc/shell/run-arc-text "stash" "push"))
+  (if (string-empty-p message)
+      (yandex-arc/shell/run-arc-text "stash" "push")
+    (yandex-arc/shell/run-arc-text "stash" "push" "-m" message)))
 
 
 (defun yandex-arc/shell/stash-apply (stash-num --index)
