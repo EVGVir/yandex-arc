@@ -72,11 +72,14 @@
 files taken from STATUS."
   (let ((untracked (yandex-arc/get-changed-paths status "untracked"))
         (unstaged  (yandex-arc/get-changed-paths status "changed"))
+        (unmerged  (yandex-arc/get-changed-paths status "unmerged"))
         (staged    (yandex-arc/get-changed-paths status "staged")))
     (when (> (length untracked) 0)
       (yandex-arc/insert-files-section "Untracked files" untracked nil))
     (when (> (length unstaged) 0)
       (yandex-arc/insert-files-section "Unstaged changes" unstaged :unstaged))
+    (when (> (length unmerged) 0)
+      (yandex-arc/insert-files-section "Unmerged changes" unmerged nil))
     (when (> (length staged) 0)
       (yandex-arc/insert-files-section "Staged changes" staged :staged))))
 
