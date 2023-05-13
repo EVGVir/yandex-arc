@@ -33,10 +33,9 @@
 
 (defun yandex-arc/mode-init ()
   "Initializes Yandex Arc Major Mode"
-  (yandex-arc/shell/update-root)
-  (let ((default-directory (concat (file-remote-p default-directory) yandex-arc/shell/root)))
+  (let* ((default-directory (concat (file-remote-p default-directory) (yandex-arc/shell/root))))
     (switch-to-buffer
-     (concat "Arc: " (file-name-nondirectory yandex-arc/shell/root)))
+     (concat "Arc: " (file-name-nondirectory default-directory)))
     (yandex-arc-mode)
     (yandex-arc/update-arc-buffer)))
 
@@ -171,4 +170,3 @@ LOCATION can be \"changed\", \"staged\" or \"untracked\"."
     (magit-insert-heading
        (propertize (format "stash@{%d}" index) 'font-lock-face 'magit-hash)
        " " description "\n")))
-

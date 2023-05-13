@@ -4,10 +4,6 @@
   "Yandex Arc binary.")
 
 
-(defvar-local yandex-arc/shell/root nil
-  "Value returned by the most recent call to `arc root`.")
-
-
 (defun yandex-arc/shell/run-arc (&rest args)
   (setq args (flatten-list args))
   (apply 'process-file (append (list yandex-arc/shell/arc-bin nil t nil) args)))
@@ -27,8 +23,8 @@
     (buffer-string)))
 
 
-(defun yandex-arc/shell/update-root ()
-  (setq yandex-arc/shell/root (string-trim (yandex-arc/shell/run-arc-text "root"))))
+(defun yandex-arc/shell/root ()
+  (string-trim (yandex-arc/shell/run-arc-text "root")))
 
 
 (defun yandex-arc/shell/status ()
