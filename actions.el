@@ -65,6 +65,17 @@
       (message "No stash selected."))))
 
 
+;; Branches
+(transient-define-prefix yandex-arc/actions/branch-transient ()
+  [["Checkout"
+    ("b" "branch/revision"   yandex-arc/actions/not-implemented-message)
+    ("c" "new branch"        yandex-arc/actions/not-implemented-message)]
+   ["Create"
+    ("n" "new branch"        yandex-arc/actions/not-implemented-message)]
+   ["List"
+    ("l" "list all branches" yandex-arc/actions/show-all-branches)]])
+
+
 (defun yandex-arc/actions/show-all-branches ()
   "Lists all branches."
   (interactive)
