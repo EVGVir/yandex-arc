@@ -21,8 +21,7 @@
 
 (define-derived-mode yandex-arc-mode magit-section-mode "arc"
   "Yandex Arc Major Mode."
-  (setq revert-buffer-function
-        (lambda (ignore-auto noconfirm) (yandex-arc/update-arc-buffer))))
+  (setq-local revert-buffer-function 'yandex-arc/revert-arc-buffer))
 
 
 (defclass yandex-arc/root-section    (magit-section) ())
@@ -37,11 +36,11 @@
          (buffer (get-buffer-create (concat "arc: " (file-name-nondirectory default-directory)))))
     (set-buffer buffer)
     (yandex-arc-mode)
-    (yandex-arc/update-arc-buffer)
+    (yandex-arc/revert-arc-buffer nil nil)
     (switch-to-buffer buffer)))
 
 
-(defun yandex-arc/update-arc-buffer ()
+(defun yandex-arc/revert-arc-buffer (ignore-auto noconfirm)
   (yandex-arc/redraw-arc-buffer
    (yandex-arc/shell/info)
    (yandex-arc/shell/status)

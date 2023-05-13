@@ -21,7 +21,7 @@
     (dolist (file-name file-names)
       (yandex-arc/shell/stage file-name))
     (when (length file-names)
-      (yandex-arc/update-arc-buffer))))
+      (yandex-arc/revert-arc-buffer nil nil))))
 
 
 (defun yandex-arc/actions/unstage-file ()
@@ -31,7 +31,7 @@
     (dolist (file-name file-names)
       (yandex-arc/shell/unstage file-name))
     (when (length file-names)
-      (yandex-arc/update-arc-buffer))))
+      (yandex-arc/revert-arc-buffer nil nil))))
 
 
 ;; Stashing
@@ -50,7 +50,7 @@
   "Puts everything into the stash."
   (interactive "MStash message: ")
   (message (string-trim (yandex-arc/shell/stash-push message)))
-  (yandex-arc/update-arc-buffer))
+  (yandex-arc/revert-arc-buffer nil nil))
 
 
 (defun yandex-arc/actions/stash-apply ()
@@ -60,6 +60,6 @@
     (if stash-index
         (progn
           (yandex-arc/shell/stash-apply stash-index t)
-          (yandex-arc/update-arc-buffer))
+          (yandex-arc/revert-arc-buffer nil nil))
       (ding)
       (message "No stash selected."))))
