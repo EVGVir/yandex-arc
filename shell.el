@@ -97,3 +97,7 @@ stack. If --INDEX is t then index state is restored."
 
 (defun yandex-arc/shell/branch-create (start-at branch-name)
   (yandex-arc/shell/run-arc-text "branch" branch-name start-at))
+
+
+(defun yandex-arc/shell/checkout (branch-name-or-revision)
+  (yandex-arc/shell/run-arc-text "checkout" branch-name-or-revision))

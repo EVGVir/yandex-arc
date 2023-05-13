@@ -68,7 +68,7 @@
 ;; Branches
 (transient-define-prefix yandex-arc/actions/branch-transient ()
   [["Checkout"
-    ("b" "branch/revision"   yandex-arc/actions/not-implemented-message)
+    ("b" "branch/revision"   yandex-arc/actions/checkout)
     ("c" "new branch"        yandex-arc/actions/not-implemented-message)]
    ["Create"
     ("n" "new branch"        yandex-arc/actions/create-new-branch)]
@@ -89,3 +89,13 @@
     (when (/= (oref result :return-code) 0)
       (ding t)
       (message (oref result :value)))))
+
+
+(defun yandex-arc/actions/checkout (branch-name-or-revision)
+  "Checkouts BRANCH-NAME-OR-REVISION."
+  (interactive "sCheckout: ")
+  (let ((result (yandex-arc/shell/checkout branch-name-or-revision)))
+    (when (/= (oref result :return-code) 0)
+      (ding t)
+      (message (oref result :value))))
+  (yandex-arc/revert-arc-buffer nil nil))
