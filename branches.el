@@ -20,7 +20,7 @@
 
 (defun yandex-arc/branches/revert-branches-buffer (ignore-auto noconfirm)
   (yandex-arc/branches/redraw-branches-buffer
-   (append (yandex-arc/shell/branch-list) nil))) ; Append converts vector to list.
+   (append (oref (yandex-arc/shell/branch-list) :value) nil))) ; Append converts vector to list.
 
 
 (defun yandex-arc/branches/redraw-branches-buffer (branch-infos)

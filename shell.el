@@ -4,6 +4,12 @@
   "Yandex Arc binary.")
 
 
+(defclass yandex-arc/arc-result ()
+  ((return-code :initarg :return-code)
+   (value :initarg :value))
+  "Result returned by `arc` command either in text or JSON formats.")
+
+
 (defun yandex-arc/shell/run-arc (&rest args)
   (setq args (flatten-list args))
   (apply 'process-file (append (list yandex-arc/shell/arc-bin nil t nil) args)))
@@ -12,19 +18,23 @@
 (defun yandex-arc/shell/run-arc-json (&rest args)
   (with-temp-buffer
     (setq args (append args '("--json")))
-    (yandex-arc/shell/run-arc args)
-    (goto-char 0)
-    (json-parse-buffer)))
+    (let ((return-code (yandex-arc/shell/run-arc args)))
+      (goto-char 0)
+      (yandex-arc/arc-result
+       :return-code return-code
+       :value (json-parse-buffer)))))
 
 
 (defun yandex-arc/shell/run-arc-text (&rest args)
   (with-temp-buffer
-    (yandex-arc/shell/run-arc args)
-    (buffer-string)))
+    (let ((return-code (yandex-arc/shell/run-arc args)))
+      (yandex-arc/arc-result
+       :return-code return-code
+       :value (string-trim (buffer-string))))))
 
 
 (defun yandex-arc/shell/root ()
-  (string-trim (yandex-arc/shell/run-arc-text "root")))
+  (yandex-arc/shell/run-arc-text "root"))
 
 
 (defun yandex-arc/shell/status ()

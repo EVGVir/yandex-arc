@@ -34,7 +34,7 @@
 
 (defun yandex-arc/mode-init ()
   "Initializes Yandex Arc Major Mode"
-  (let* ((default-directory (concat (file-remote-p default-directory) (yandex-arc/shell/root)))
+  (let* ((default-directory (concat (file-remote-p default-directory) (oref (yandex-arc/shell/root) :value)))
          (buffer (get-buffer-create (concat "arc: " (file-name-nondirectory default-directory)))))
     (set-buffer buffer)
     (yandex-arc-mode)
@@ -44,9 +44,9 @@
 
 (defun yandex-arc/revert-arc-buffer (ignore-auto noconfirm)
   (yandex-arc/redraw-arc-buffer
-   (yandex-arc/shell/info)
-   (yandex-arc/shell/status)
-   (yandex-arc/shell/stash-list)))
+   (oref (yandex-arc/shell/info) :value)
+   (oref (yandex-arc/shell/status) :value)
+   (oref (yandex-arc/shell/stash-list) :value)))
 
 
 (defun yandex-arc/redraw-arc-buffer (info status stash-info)
@@ -56,7 +56,7 @@
       (magit-insert-section (yandex-arc/root-section)
         (yandex-arc/print-head-info info)
         (yandex-arc/insert-status-section status)
-        (yandex-arc/insert-stashes-section (yandex-arc/shell/stash-list))))))
+        (yandex-arc/insert-stashes-section (oref (yandex-arc/shell/stash-list) :value))))))
 
 
 (defun yandex-arc/print-head-info (info)
@@ -108,8 +108,7 @@ file. Possible values of DIFF-TYPE are described in
             (propertize file-name 'font-lock-face 'magit-diff-file-heading))
           (magit-insert-section-body
             (yandex-arc/insert-diff-hunk-sections
-             (yandex-arc/split-diff (yandex-arc/shell/diff-file file-name diff-type))))
-          )
+             (yandex-arc/split-diff (oref (yandex-arc/shell/diff-file file-name diff-type) :value)))))
       (insert (propertize file-name 'font-lock-face 'magit-filename) ?\n))))
 
 

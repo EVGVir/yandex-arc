@@ -49,7 +49,7 @@
 (defun yandex-arc/actions/stash-push (message)
   "Puts everything into the stash."
   (interactive "MStash message: ")
-  (message (string-trim (yandex-arc/shell/stash-push message)))
+  (message (oref (yandex-arc/shell/stash-push message) :value))
   (yandex-arc/revert-arc-buffer nil nil))
 
 
@@ -86,6 +86,6 @@
   "Creates a new branch with name NAME."
   (interactive "sCreate branch starting at: \nsName for new branch: ")
   (let ((result (yandex-arc/shell/branch-create start-at branch-name)))
-    (when (not (string-blank-p result))
+    (when (/= (oref result :return-code) 0)
       (ding t)
-      (message result))))
+      (message (oref result :value)))))
