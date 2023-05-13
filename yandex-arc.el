@@ -33,11 +33,12 @@
 
 (defun yandex-arc/mode-init ()
   "Initializes Yandex Arc Major Mode"
-  (let* ((default-directory (concat (file-remote-p default-directory) (yandex-arc/shell/root))))
-    (switch-to-buffer
-     (concat "Arc: " (file-name-nondirectory default-directory)))
+  (let* ((default-directory (concat (file-remote-p default-directory) (yandex-arc/shell/root)))
+         (buffer (get-buffer-create (concat "arc: " (file-name-nondirectory default-directory)))))
+    (set-buffer buffer)
     (yandex-arc-mode)
-    (yandex-arc/update-arc-buffer)))
+    (yandex-arc/update-arc-buffer)
+    (switch-to-buffer buffer)))
 
 
 (defun yandex-arc/update-arc-buffer ()
