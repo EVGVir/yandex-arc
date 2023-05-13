@@ -83,3 +83,7 @@ stack. If --INDEX is t then index state is restored."
 
 (defun yandex-arc/shell/branch-list ()
   (yandex-arc/shell/run-arc-json "branch" "--list" "--all"))
+
+
+(defun yandex-arc/shell/branch-create (start-at branch-name)
+  (yandex-arc/shell/run-arc-text "branch" branch-name start-at))

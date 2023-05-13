@@ -71,7 +71,7 @@
     ("b" "branch/revision"   yandex-arc/actions/not-implemented-message)
     ("c" "new branch"        yandex-arc/actions/not-implemented-message)]
    ["Create"
-    ("n" "new branch"        yandex-arc/actions/not-implemented-message)]
+    ("n" "new branch"        yandex-arc/actions/create-new-branch)]
    ["List"
     ("l" "list all branches" yandex-arc/actions/show-all-branches)]])
 
@@ -80,3 +80,12 @@
   "Lists all branches."
   (interactive)
   (yandex-arc/branches/show-all-branches))
+
+
+(defun yandex-arc/actions/create-new-branch (start-at branch-name)
+  "Creates a new branch with name NAME."
+  (interactive "sCreate branch starting at: \nsName for new branch: ")
+  (let ((result (yandex-arc/shell/branch-create start-at branch-name)))
+    (when (not (string-blank-p result))
+      (ding t)
+      (message result))))
