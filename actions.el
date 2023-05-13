@@ -63,3 +63,9 @@
           (yandex-arc/revert-arc-buffer nil nil))
       (ding)
       (message "No stash selected."))))
+
+
+(defun yandex-arc/actions/show-all-branches ()
+  "Lists all branches."
+  (interactive)
+  (yandex-arc/branches/show-all-branches))

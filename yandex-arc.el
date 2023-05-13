@@ -16,7 +16,8 @@
   "RET" 'yandex-arc/actions/visit-file
   "s"   'yandex-arc/actions/stage-file
   "u"   'yandex-arc/actions/unstage-file
-  "z"   'yandex-arc/actions/stash-transient)
+  "z"   'yandex-arc/actions/stash-transient
+  "y"   'yandex-arc/actions/show-all-branches)
 
 
 (define-derived-mode yandex-arc-mode magit-section-mode "arc"

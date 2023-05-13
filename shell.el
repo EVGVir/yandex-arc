@@ -79,3 +79,7 @@
 stack. If --INDEX is t then index state is restored."
   (yandex-arc/shell/run-arc-text
    "stash" "apply" (number-to-string stash-num) (when --index "--index")))
+
+
+(defun yandex-arc/shell/branch-list ()
+  (yandex-arc/shell/run-arc-json "branch" "--list" "--all"))
