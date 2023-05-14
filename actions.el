@@ -73,7 +73,9 @@
    ["Create"
     ("n" "new branch"        yandex-arc/actions/create-new-branch)]
    ["List"
-    ("l" "list all branches" yandex-arc/actions/show-all-branches)]])
+    ("l" "list all branches" yandex-arc/actions/show-all-branches)]
+   ["Do"
+    ("k" "delete"            yandex-arc/actions/delete-branch)]])
 
 
 (defun yandex-arc/actions/show-all-branches ()
@@ -110,3 +112,11 @@ Returns the code returned by `arc`."
   (interactive "sCreate and checkout branch starting at: \nsName for new branch: ")
   (when (= (yandex-arc/actions/create-new-branch start-at branch-name) 0)
     (yandex-arc/actions/checkout branch-name)))
+
+
+(defun yandex-arc/actions/delete-branch (branch-name)
+  "Deletes branch BRANCH-NAME."
+  (interactive "sDelete branch: ")
+  (let ((result (yandex-arc/shell/delete-branch branch-name)))
+    (when (/= (oref result :return-code) 0) (ding t))
+    (message (oref result :value))))
