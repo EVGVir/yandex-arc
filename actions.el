@@ -69,7 +69,7 @@
 (transient-define-prefix yandex-arc/actions/branch-transient ()
   [["Checkout"
     ("b" "branch/revision"   yandex-arc/actions/checkout)
-    ("c" "new branch"        yandex-arc/actions/not-implemented-message)]
+    ("c" "new branch"        yandex-arc/actions/create-and-checkout)]
    ["Create"
     ("n" "new branch"        yandex-arc/actions/create-new-branch)]
    ["List"
@@ -83,12 +83,16 @@
 
 
 (defun yandex-arc/actions/create-new-branch (start-at branch-name)
-  "Creates a new branch with name NAME."
+  "Creates a new branch BRANCH-NAME.
+
+Returns the code returned by `arc`."
   (interactive "sCreate branch starting at: \nsName for new branch: ")
-  (let ((result (yandex-arc/shell/branch-create start-at branch-name)))
-    (when (/= (oref result :return-code) 0)
+  (let* ((result (yandex-arc/shell/branch-create start-at branch-name))
+         (return-code (oref result :return-code)))
+    (when (/= return-code 0)
       (ding t)
-      (message (oref result :value)))))
+      (message (oref result :value)))
+    return-code))
 
 
 (defun yandex-arc/actions/checkout (branch-name-or-revision)
@@ -99,3 +103,10 @@
       (ding t)
       (message (oref result :value))))
   (yandex-arc/revert-arc-buffer nil nil))
+
+
+(defun yandex-arc/actions/create-and-checkout (start-at branch-name)
+  "Creates and checkouts a new branch BRANCH-NAME."
+  (interactive "sCreate and checkout branch starting at: \nsName for new branch: ")
+  (when (= (yandex-arc/actions/create-new-branch start-at branch-name) 0)
+    (yandex-arc/actions/checkout branch-name)))
