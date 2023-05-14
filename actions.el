@@ -136,7 +136,9 @@ Returns the code returned by `arc`."
 ;; Commit
 (transient-define-prefix yandex-arc/actions/commit-transient ()
   [["Create"
-    ("c" "commit" yandex-arc/actions/commit)]])
+    ("c" "Commit" yandex-arc/actions/commit)]
+   ["Edit HEAD"
+    ("a" "Amend" yandex-arc/actions/amend)]])
 
 
 (defun yandex-arc/actions/revert-arc-buffer-on-process-exit (process event)
@@ -155,5 +157,12 @@ Returns the code returned by `arc`."
 (defun yandex-arc/actions/commit ()
   (interactive)
   (yandex-arc/shell/commit
+   'yandex-arc/actions/commit-filter
+   'yandex-arc/actions/revert-arc-buffer-on-process-exit))
+
+
+(defun yandex-arc/actions/amend ()
+  (interactive)
+  (yandex-arc/shell/amend
    'yandex-arc/actions/commit-filter
    'yandex-arc/actions/revert-arc-buffer-on-process-exit))

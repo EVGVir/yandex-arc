@@ -130,3 +130,7 @@ stack. If --INDEX is t then index state is restored."
 
 (defun yandex-arc/shell/commit (process-filter on-process-status-change)
   (yandex-arc/shell/run-arc-with-editor process-filter on-process-status-change "commit"))
+
+
+(defun yandex-arc/shell/amend (process-filter on-process-status-change)
+  (yandex-arc/shell/run-arc-with-editor process-filter on-process-status-change "commit" "--amend"))
