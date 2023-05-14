@@ -111,3 +111,7 @@ stack. If --INDEX is t then index state is restored."
 
 (defun yandex-arc/shell/checkout (branch-name-or-revision)
   (yandex-arc/shell/run-arc-text "checkout" branch-name-or-revision))
+
+
+(defun yandex-arc/shell/pull-request-checkout (id)
+  (yandex-arc/shell/run-arc-text "pr" "checkout" (number-to-string id)))

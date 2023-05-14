@@ -69,7 +69,8 @@
 (transient-define-prefix yandex-arc/actions/branch-transient ()
   [["Checkout"
     ("b" "branch/revision"   yandex-arc/actions/checkout)
-    ("c" "new branch"        yandex-arc/actions/create-and-checkout)]
+    ("c" "new branch"        yandex-arc/actions/create-and-checkout)
+    ("p" "pull request"      yandex-arc/actions/pull-request-checkout)]
    ["Create"
     ("n" "new branch"        yandex-arc/actions/create-new-branch)]
    ["List"
@@ -120,3 +121,13 @@ Returns the code returned by `arc`."
   (let ((result (yandex-arc/shell/delete-branch branch-name)))
     (when (/= (oref result :return-code) 0) (ding t))
     (message "%s" (oref result :value))))
+
+
+(defun yandex-arc/actions/pull-request-checkout (id)
+  "Checkouts pull request with the specified ID."
+  (interactive "nCheckout pull request: ")
+  (let ((result (yandex-arc/shell/pull-request-checkout id)))
+    (message "%s" (oref result :value))
+    (if (/= (oref result :return-code) 0)
+        (ding t)
+      (yandex-arc/revert-arc-buffer nil nil))))
