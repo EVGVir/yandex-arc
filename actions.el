@@ -49,7 +49,7 @@
 (defun yandex-arc/actions/stash-push (message)
   "Puts everything into the stash."
   (interactive "MStash message: ")
-  (message (oref (yandex-arc/shell/stash-push message) :value))
+  (message "%s" (oref (yandex-arc/shell/stash-push message) :value))
   (yandex-arc/revert-arc-buffer nil nil))
 
 
@@ -93,7 +93,7 @@ Returns the code returned by `arc`."
          (return-code (oref result :return-code)))
     (when (/= return-code 0)
       (ding t)
-      (message (oref result :value)))
+      (message "%s" (oref result :value)))
     return-code))
 
 
@@ -103,7 +103,7 @@ Returns the code returned by `arc`."
   (let ((result (yandex-arc/shell/checkout branch-name-or-revision)))
     (when (/= (oref result :return-code) 0)
       (ding t)
-      (message (oref result :value))))
+      (message "%s" (oref result :value))))
   (yandex-arc/revert-arc-buffer nil nil))
 
 
@@ -119,4 +119,4 @@ Returns the code returned by `arc`."
   (interactive "sDelete branch: ")
   (let ((result (yandex-arc/shell/delete-branch branch-name)))
     (when (/= (oref result :return-code) 0) (ding t))
-    (message (oref result :value))))
+    (message "%s" (oref result :value))))
