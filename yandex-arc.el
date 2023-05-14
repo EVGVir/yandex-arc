@@ -15,6 +15,7 @@
   :doc "Keymap for `yandex-arc-mode'."
   "RET" 'yandex-arc/actions/visit-file
   "b"   'yandex-arc/actions/branch-transient
+  "c"   'yandex-arc/actions/commit-transient
   "s"   'yandex-arc/actions/stage-file
   "u"   'yandex-arc/actions/unstage-file
   "z"   'yandex-arc/actions/stash-transient

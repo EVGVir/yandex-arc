@@ -131,3 +131,29 @@ Returns the code returned by `arc`."
     (if (/= (oref result :return-code) 0)
         (ding t)
       (yandex-arc/revert-arc-buffer nil nil))))
+
+
+;; Commit
+(transient-define-prefix yandex-arc/actions/commit-transient ()
+  [["Create"
+    ("c" "commit" yandex-arc/actions/commit)]])
+
+
+(defun yandex-arc/actions/revert-arc-buffer-on-process-exit (process event)
+  "A process sentinel that redraws a buffer on PROCESS exit."
+  (unless (process-live-p process)
+    (when (/= (process-exit-status process) 0)
+      (ding t))
+    (yandex-arc/revert-arc-buffer nil nil)))
+
+
+(defun yandex-arc/actions/commit-filter (process string)
+  (when (string-match-p "nothing to commit!" string)
+    (message "nothing to commit!")))
+
+
+(defun yandex-arc/actions/commit ()
+  (interactive)
+  (yandex-arc/shell/commit
+   'yandex-arc/actions/commit-filter
+   'yandex-arc/actions/revert-arc-buffer-on-process-exit))

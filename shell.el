@@ -25,6 +25,17 @@
        :value (json-parse-buffer)))))
 
 
+(defun yandex-arc/shell/run-arc-with-editor (process-filter on-process-status-change &rest args)
+  (with-editor
+    (make-process
+     :name "arc"
+     :buffer nil
+     :command (append (list yandex-arc/shell/arc-bin) args)
+     :filter process-filter
+     :sentinel on-process-status-change
+     :file-handler t)))
+
+
 (defun yandex-arc/shell/normalize-string (str)
   (replace-regexp-in-string
    "" "\n"
@@ -115,3 +126,7 @@ stack. If --INDEX is t then index state is restored."
 
 (defun yandex-arc/shell/pull-request-checkout (id)
   (yandex-arc/shell/run-arc-text "pr" "checkout" (number-to-string id)))
+
+
+(defun yandex-arc/shell/commit (process-filter on-process-status-change)
+  (yandex-arc/shell/run-arc-with-editor process-filter on-process-status-change "commit"))
