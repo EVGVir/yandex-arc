@@ -11,15 +11,34 @@
   (yandex-arc/mode-init))
 
 
+(transient-define-prefix yandex-arc/transient ()
+  [["Transient and dwim commands"
+    ("b"        "Branch"                  yandex-arc/actions/branch-transient)
+    ("c"        "Commit"                  yandex-arc/actions/commit-transient)
+    ("y"        "Show all branches"       yandex-arc/actions/show-all-branches)
+    ("z"        "Stash"                   yandex-arc/actions/stash-transient)]
+   ["Applying changes"
+    ("s"        "Stage"                   yandex-arc/actions/stage-file)
+    ("u"        "Unstage"                 yandex-arc/actions/unstage-file)]
+   ["Essential commands"
+    ("g"        "Refresh current buffer"  revert-buffer)
+    ("q"        "Bury current buffer"     bury-buffer)
+    ("<return>" "Visit thing at point"    yandex-arc/actions/visit-file)
+    ("<tab>"    "Toggle section at point" magit-section-toggle)]])
+
+
 (defvar-keymap yandex-arc-mode-map
   :doc "Keymap for `yandex-arc-mode'."
-  "RET" 'yandex-arc/actions/visit-file
-  "b"   'yandex-arc/actions/branch-transient
-  "c"   'yandex-arc/actions/commit-transient
-  "s"   'yandex-arc/actions/stage-file
-  "u"   'yandex-arc/actions/unstage-file
-  "z"   'yandex-arc/actions/stash-transient
-  "y"   'yandex-arc/actions/show-all-branches)
+  "<return>" 'yandex-arc/actions/visit-file
+  "?"        'yandex-arc/transient
+  "b"        'yandex-arc/actions/branch-transient
+  "c"        'yandex-arc/actions/commit-transient
+  "g"        'revert-buffer
+  "h"        'yandex-arc/transient
+  "s"        'yandex-arc/actions/stage-file
+  "u"        'yandex-arc/actions/unstage-file
+  "y"        'yandex-arc/actions/show-all-branches
+  "z"        'yandex-arc/actions/stash-transient)
 
 
 (define-derived-mode yandex-arc-mode magit-section-mode "arc"
