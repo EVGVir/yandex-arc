@@ -128,7 +128,8 @@ file. Possible values of DIFF-TYPE are described in
             (propertize file-name 'font-lock-face 'magit-diff-file-heading))
           (magit-insert-section-body
             (yandex-arc/insert-diff-hunk-sections
-             (yandex-arc/split-diff (oref (yandex-arc/shell/diff-file file-name diff-type) :value)))))
+             (yandex-arc/split-diff (oref (yandex-arc/shell/diff-file file-name diff-type) :value)))
+            (insert ?\n)))
       (insert (propertize file-name 'font-lock-face 'magit-filename) ?\n))))
 
 
