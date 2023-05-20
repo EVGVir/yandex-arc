@@ -185,3 +185,10 @@ Returns the code returned by `arc`."
   (yandex-arc/shell/pull-request-create
    'yandex-arc/actions/pull-request-create-filter
    'yandex-arc/actions/revert-arc-buffer-on-process-exit))
+
+
+;; Pull
+(defun yandex-arc/actions/pull ()
+  (interactive)
+  (yandex-arc/shell/pull)
+  (yandex-arc/revert-arc-buffer nil nil))

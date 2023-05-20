@@ -138,3 +138,7 @@ stack. If --INDEX is t then index state is restored."
 
 (defun yandex-arc/shell/pull-request-create (process-filter on-process-status-change)
   (yandex-arc/shell/run-arc-with-editor process-filter on-process-status-change "pr" "create"))
+
+
+(defun yandex-arc/shell/pull ()
+  (yandex-arc/shell/run-arc-text "pull"))
