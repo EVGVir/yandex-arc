@@ -124,13 +124,17 @@ stack. If --INDEX is t then index state is restored."
   (yandex-arc/shell/run-arc-text "checkout" branch-name-or-revision))
 
 
-(defun yandex-arc/shell/pull-request-checkout (id)
-  (yandex-arc/shell/run-arc-text "pr" "checkout" (number-to-string id)))
-
-
 (defun yandex-arc/shell/commit (process-filter on-process-status-change)
   (yandex-arc/shell/run-arc-with-editor process-filter on-process-status-change "commit"))
 
 
 (defun yandex-arc/shell/amend (process-filter on-process-status-change)
   (yandex-arc/shell/run-arc-with-editor process-filter on-process-status-change "commit" "--amend"))
+
+
+(defun yandex-arc/shell/pull-request-checkout (id)
+  (yandex-arc/shell/run-arc-text "pr" "checkout" (number-to-string id)))
+
+
+(defun yandex-arc/shell/pull-request-create (process-filter on-process-status-change)
+  (yandex-arc/shell/run-arc-with-editor process-filter on-process-status-change "pr" "create"))

@@ -15,6 +15,7 @@
   [["Transient and dwim commands"
     ("b"        "Branch"                  yandex-arc/actions/branch-transient)
     ("c"        "Commit"                  yandex-arc/actions/commit-transient)
+    ("P"        "Pull request"            yandex-arc/actions/pull-request-transient)
     ("y"        "Show all branches"       yandex-arc/actions/show-all-branches)
     ("z"        "Stash"                   yandex-arc/actions/stash-transient)]
    ["Applying changes"
@@ -35,6 +36,7 @@
   "c"        'yandex-arc/actions/commit-transient
   "g"        'revert-buffer
   "h"        'yandex-arc/transient
+  "P"        'yandex-arc/actions/pull-request-transient
   "s"        'yandex-arc/actions/stage-file
   "u"        'yandex-arc/actions/unstage-file
   "y"        'yandex-arc/actions/show-all-branches

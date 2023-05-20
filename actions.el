@@ -123,16 +123,6 @@ Returns the code returned by `arc`."
     (message "%s" (oref result :value))))
 
 
-(defun yandex-arc/actions/pull-request-checkout (id)
-  "Checkouts pull request with the specified ID."
-  (interactive "nCheckout pull request: ")
-  (let ((result (yandex-arc/shell/pull-request-checkout id)))
-    (message "%s" (oref result :value))
-    (if (/= (oref result :return-code) 0)
-        (ding t)
-      (yandex-arc/revert-arc-buffer nil nil))))
-
-
 ;; Commit
 (transient-define-prefix yandex-arc/actions/commit-transient ()
   [["Create"
@@ -165,4 +155,33 @@ Returns the code returned by `arc`."
   (interactive)
   (yandex-arc/shell/amend
    'yandex-arc/actions/commit-filter
+   'yandex-arc/actions/revert-arc-buffer-on-process-exit))
+
+
+;; Pull request
+(transient-define-prefix yandex-arc/actions/pull-request-transient ()
+  [["Checkout"
+    ("co" "checkout" yandex-arc/actions/pull-request-checkout)]
+   ["Create"
+    ("cr" "create" yandex-arc/actions/pull-request-create)]])
+
+
+(defun yandex-arc/actions/pull-request-checkout (id)
+  "Checkouts pull request with the specified ID."
+  (interactive "nCheckout pull request: ")
+  (let ((result (yandex-arc/shell/pull-request-checkout id)))
+    (message "%s" (oref result :value))
+    (if (/= (oref result :return-code) 0)
+        (ding t)
+      (yandex-arc/revert-arc-buffer nil nil))))
+
+
+(defun yandex-arc/actions/pull-request-create-filter (process string)
+  (message (yandex-arc/shell/normalize-string string)))
+
+
+(defun yandex-arc/actions/pull-request-create ()
+  (interactive)
+  (yandex-arc/shell/pull-request-create
+   'yandex-arc/actions/pull-request-create-filter
    'yandex-arc/actions/revert-arc-buffer-on-process-exit))
