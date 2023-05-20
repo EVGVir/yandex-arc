@@ -27,14 +27,25 @@
   (save-excursion
     (let ((inhibit-read-only t))
       (erase-buffer)
-      (magit-insert-section (yandex-arc/branches-section)
-        (magit-insert-heading
-          (propertize "Branches" 'font-lock-face 'magit-section-heading)
-          ":") ; Column at the end of the heading is replaced on subsections number.
-        (dolist (branch-info branch-infos)
-          (yandex-arc/branches/insert-branch-section
-           (gethash "name" branch-info)
-           (gethash "current" branch-info)))))))
+      (magit-insert-section (yandex-arc/root-section)
+        (yandex-arc/branches/insert-branches-section
+         "Local branches" nil
+         (seq-filter (lambda (branch-info) (gethash "local" branch-info)) branch-infos))
+        (yandex-arc/branches/insert-branches-section
+         "Remote branches" t
+         (seq-filter (lambda (branch-info) (not (gethash "local" branch-info))) branch-infos))))))
+
+
+(defun yandex-arc/branches/insert-branches-section (section-name hide-section branch-infos)
+  (magit-insert-section (yandex-arc/branches-section section-name hide-section)
+    (magit-insert-heading
+      (propertize section-name 'font-lock-face 'magit-section-heading)
+      ":") ; Column at the end of the heading is replaced on subsections number.
+    (dolist (branch-info branch-infos)
+      (yandex-arc/branches/insert-branch-section
+       (gethash "name" branch-info)
+       (gethash "current" branch-info)))
+    (insert ?\n)))
 
 
 (defun yandex-arc/branches/insert-branch-section (name is-head)
