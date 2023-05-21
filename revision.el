@@ -31,17 +31,22 @@
 
 (defun yandex-arc/revision/redraw-buffer ()
   (save-excursion
-    (let ((inhibit-read-only t)
-          (description (yandex-arc/revision/get-commit-description yandex-arc/revision/commit)))
+    (let ((inhibit-read-only t))
       (erase-buffer)
       (magit-insert-section (yandex-arc/root-section)
-        (yandex-arc/revision/insert-summary-section description)
-        (yandex-arc/revision/insert-message-section description)
+        (when (not (yandex-arc/revision/is-stash yandex-arc/revision/commit))
+          (let ((description (yandex-arc/revision/get-commit-description yandex-arc/revision/commit)))
+            (yandex-arc/revision/insert-summary-section description)
+            (yandex-arc/revision/insert-message-section description)))
         (yandex-arc/insert-files-section
          "Changes"
          (yandex-arc/revision/diff-commits-file-names-only yandex-arc/revision/commit)
          :commit
          yandex-arc/revision/commit)))))
+
+
+(defun yandex-arc/revision/is-stash (commit)
+  (string-match-p "^stash@{[[:digit:]]+}" commit))
 
 
 (defun yandex-arc/revision/get-commit-description (commit)
