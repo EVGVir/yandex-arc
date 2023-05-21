@@ -15,6 +15,11 @@
               (lambda (ignore-auto noconfirm) (yandex-arc/revision/redraw-buffer))))
 
 
+(defvar-keymap yandex-arc-revision-mode-map
+  :doc "Keymap for `yandex-arc-revision-mode'."
+  "<return>" 'yandex-arc/actions/visit-at-point)
+
+
 (defun yandex-arc/revision/show-revision (commit)
   (let ((buffer (get-buffer-create (concat "arc-revision: " (file-name-nondirectory default-directory)))))
     (set-buffer buffer)
@@ -65,8 +70,13 @@
     (insert (yandex-arc/properties/hash (gethash "commit" description)) ?\n)
     (insert "Author:       " (gethash "author" description) ?\n)
     (insert "Date:         " (gethash "date" description) ?\n)
-    (when (gethash "revision" description)
-      (insert "Revision:     " (number-to-string (gethash "revision" description)) ?\n))
+    (let ((revision (gethash "revision" description)))
+      (when revision
+        (setq revision (number-to-string revision))
+        (insert
+         "SVN Revision: "
+         (yandex-arc/properties/link revision (concat "https://a.yandex-team.ru/arcadia/commit/r" revision))
+         ?\n)))
     (yandex-arc/revision/print-attributes description)
     (insert ?\n)))
 
@@ -82,7 +92,12 @@
 (defun yandex-arc/revision/print-attributes (description)
   (let ((attributes (gethash "attributes" description)))
     (when attributes
-      (insert "Pull request: " (gethash "pr.id" attributes) ?\n))))
+      (let ((pull-request-id (gethash "pr.id" attributes)))
+        (insert
+         "Pull request: "
+         (yandex-arc/properties/link
+          pull-request-id (concat "https://a.yandex-team.ru/review/" pull-request-id))
+         ?\n)))))
 
 
 (defun yandex-arc/revision/insert-message-section (description)

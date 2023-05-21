@@ -10,6 +10,11 @@
   (setq-local revert-buffer-function 'yandex-arc/branches/revert-branches-buffer))
 
 
+(defvar-keymap yandex-arc-branches-mode-map
+  :doc "Keymap for `yandex-arc-branches-mode'."
+  "<return>" 'yandex-arc/actions/visit-at-point)
+
+
 (defun yandex-arc/branches/show-all-branches ()
   (let ((buffer (get-buffer-create (concat "arc-branches: " (file-name-nondirectory default-directory)))))
     (set-buffer buffer)

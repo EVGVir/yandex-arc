@@ -26,13 +26,13 @@
    ["Essential commands"
     ("g"        "Refresh current buffer"  revert-buffer)
     ("q"        "Bury current buffer"     bury-buffer)
-    ("<return>" "Visit thing at point"    yandex-arc/actions/visit-file)
+    ("<return>" "Visit thing at point"    yandex-arc/actions/visit-at-point)
     ("<tab>"    "Toggle section at point" magit-section-toggle)]])
 
 
 (defvar-keymap yandex-arc-mode-map
   :doc "Keymap for `yandex-arc-mode'."
-  "<return>" 'yandex-arc/actions/visit-file
+  "<return>" 'yandex-arc/actions/visit-at-point
   "?"        'yandex-arc/transient
   "b"        'yandex-arc/actions/branch-transient
   "c"        'yandex-arc/actions/commit-transient

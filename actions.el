@@ -6,11 +6,18 @@
   (message "¯\\_(ツ)_/¯   Not implemented yet"))
 
 
-(defun yandex-arc/actions/visit-file (file-name)
-  "Visits file at point."
-  (interactive (list (magit-section-value-if 'magit-file-section)))
-  (when file-name
-    (find-file file-name)))
+;; Actions at point
+(defun yandex-arc/actions/visit-at-point ()
+  (interactive)
+  (let ((type (get-text-property (point) 'yandex-arc/properties/type-property)))
+    (cond ((eq type 'file-name)
+           (find-file (get-text-property (point) 'yandex-arc/properties/file-name-property)))
+          ((eq type 'branch-name)
+           (yandex-arc/actions/show-commit (get-text-property (point) 'yandex-arc/properties/branch-name-property)))
+          ((eq type 'hash)
+           (yandex-arc/actions/show-commit (get-text-property (point) 'yandex-arc/properties/hash-property)))
+          ((eq type 'link)
+           (browse-url (get-text-property (point) 'button-data))))))
 
 
 ;; Staging
