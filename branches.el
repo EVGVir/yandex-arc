@@ -50,12 +50,12 @@
 
 (defun yandex-arc/branches/insert-branch-section (name is-head)
   (magit-insert-section (yandex-arc/branch-section name)
-    (magit-insert-heading
-      (if is-head
-          (concat
-           (yandex-arc/properties/section-heading "@ ")
-           (yandex-arc/properties/current-branch-name name))
-        (concat
-         "  "
-         (yandex-arc/properties/branch-name name)))
-      "\n")))
+    (insert
+     (if is-head
+         (concat
+          (yandex-arc/properties/section-heading "@ ")
+          (yandex-arc/properties/current-branch-name name))
+       (concat
+        "  "
+        (yandex-arc/properties/branch-name name)))
+     "\n")))
