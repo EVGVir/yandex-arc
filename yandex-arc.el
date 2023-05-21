@@ -89,9 +89,8 @@
   "Adds information about HEAD to the buffer."
   (let ((branch  (gethash "branch"  info))
         (summary (gethash "summary" info)))
-    (insert "Head:     "
-            (propertize branch 'font-lock-face 'magit-branch-local)
-            " " summary "\n\n")))
+    (insert "Head:     " (yandex-arc/properties/branch-name branch) " ")
+    (insert summary "\n\n")))
 
 
 (defun yandex-arc/insert-status-section (status)
@@ -120,7 +119,7 @@ file. Possible values of DIFF-TYPE are described in
 COMMIT is used only with DIFF-TYPE equal to :commit."
   (magit-insert-section (yandex-arc/files-section)
     (magit-insert-heading
-      (propertize heading 'font-lock-face 'magit-section-heading)
+      (yandex-arc/properties/section-heading heading)
       ":") ; Column at the end of the heading is replaced on subsections number.
     (dolist (file-name file-names)
       (yandex-arc/insert-file-section file-name diff-type commit))
@@ -133,12 +132,12 @@ COMMIT is used only with DIFF-TYPE equal to :commit."
     (if diff-type
         (progn
           (magit-insert-heading
-            (propertize file-name 'font-lock-face 'magit-diff-file-heading))
+            (yandex-arc/properties/diff-file-heading file-name))
           (magit-insert-section-body
             (yandex-arc/insert-diff-hunk-sections
              (yandex-arc/split-diff (oref (yandex-arc/shell/diff-file file-name diff-type commit) :value)))
             (insert ?\n)))
-      (insert (propertize file-name 'font-lock-face 'magit-filename) ?\n))))
+      (insert (yandex-arc/properties/file-name file-name) ?\n))))
 
 
 (defun yandex-arc/insert-diff-hunk-sections (hunks)
@@ -186,7 +185,7 @@ LOCATION can be \"changed\", \"staged\" or \"untracked\"."
     (when (> stashes-num 0)
       (magit-insert-section (yandex-arc/stashes-section nil t)
         (magit-insert-heading
-          (propertize "Stashes" 'font-lock-face 'magit-section-heading)
+          (yandex-arc/properties/section-heading "Stashes")
           ":") ; Column at the end of the heading is replaced on subsections number.
         (dotimes (stash-ix stashes-num)
           (yandex-arc/insert-stash-section
@@ -198,5 +197,5 @@ LOCATION can be \"changed\", \"staged\" or \"untracked\"."
 (defun yandex-arc/insert-stash-section (index description)
   (magit-insert-section (yandex-arc/stash-section index)
     (magit-insert-heading
-       (propertize (format "stash@{%d}" index) 'font-lock-face 'magit-hash)
+       (yandex-arc/properties/hash (format "stash@{%d}" index))
        " " description "\n")))

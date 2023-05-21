@@ -62,7 +62,7 @@
 (defun yandex-arc/revision/insert-summary-section (description)
   (magit-insert-section (yandex-arc/revision/summary-section)
     (yandex-arc/revision/print-local-branches description)
-    (insert (gethash "commit" description) ?\n)
+    (insert (yandex-arc/properties/hash (gethash "commit" description)) ?\n)
     (insert "Author:       " (gethash "author" description) ?\n)
     (insert "Date:         " (gethash "date" description) ?\n)
     (when (gethash "revision" description)
@@ -74,9 +74,9 @@
 (defun yandex-arc/revision/print-local-branches (description)
   (let ((branches (gethash "branches" description)))
     (when (gethash "head" branches)
-      (insert "HEAD "))
+      (insert (yandex-arc/properties/branch-name "HEAD") " ")
     (seq-doseq (branch (gethash "local" branches))
-      (insert branch " "))))
+      (insert (yandex-arc/properties/branch-name branch) " ")))))
 
 
 (defun yandex-arc/revision/print-attributes (description)

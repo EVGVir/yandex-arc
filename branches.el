@@ -39,7 +39,7 @@
 (defun yandex-arc/branches/insert-branches-section (section-name hide-section branch-infos)
   (magit-insert-section (yandex-arc/branches-section section-name hide-section)
     (magit-insert-heading
-      (propertize section-name 'font-lock-face 'magit-section-heading)
+      (yandex-arc/properties/section-heading section-name)
       ":") ; Column at the end of the heading is replaced on subsections number.
     (dolist (branch-info branch-infos)
       (yandex-arc/branches/insert-branch-section
@@ -53,10 +53,9 @@
     (magit-insert-heading
       (if is-head
           (concat
-           (propertize "@ " 'font-lock-face 'magit-section-heading)
-           (propertize name 'font-lock-face 'magit-branch-current))
+           (yandex-arc/properties/section-heading "@ ")
+           (yandex-arc/properties/current-branch-name name))
         (concat
          "  "
-         (propertize name 'font-lock-face 'magit-branch-local))
-        )
+         (yandex-arc/properties/branch-name name)))
       "\n")))
