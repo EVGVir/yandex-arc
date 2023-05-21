@@ -33,6 +33,7 @@
   (save-excursion
     (let ((inhibit-read-only t))
       (erase-buffer)
+      (setq-local header-line-format yandex-arc/revision/commit)
       (magit-insert-section (yandex-arc/root-section)
         (when (not (yandex-arc/revision/is-stash yandex-arc/revision/commit))
           (let ((description (yandex-arc/revision/get-commit-description yandex-arc/revision/commit)))
