@@ -67,16 +67,20 @@
 (defun yandex-arc/revision/insert-summary-section (description)
   (magit-insert-section (yandex-arc/revision/summary-section)
     (yandex-arc/revision/print-local-branches description)
-    (insert (yandex-arc/properties/hash (gethash "commit" description)) ?\n)
-    (insert "Author:       " (gethash "author" description) ?\n)
-    (insert "Date:         " (gethash "date" description) ?\n)
-    (let ((revision (gethash "revision" description)))
+    (let ((commit (gethash "commit" description))
+          (author (gethash "author" description))
+          (date   (gethash "date" description))
+          (revision (gethash "revision" description)))
+      (insert (yandex-arc/properties/hash commit) ?\n)
+      (insert "Author:       "
+              (yandex-arc/properties/link author "https://staff.yandex-team.ru/%s" author)
+              ?\n)
+      (insert "Date:         " date ?\n)
       (when revision
         (setq revision (number-to-string revision))
-        (insert
-         "SVN Revision: "
-         (yandex-arc/properties/link revision (concat "https://a.yandex-team.ru/arcadia/commit/r" revision))
-         ?\n)))
+        (insert "SVN Revision: "
+                (yandex-arc/properties/link revision "https://a.yandex-team.ru/arcadia/commit/r%s" revision)
+                ?\n)))
     (yandex-arc/revision/print-attributes description)
     (insert ?\n)))
 
@@ -93,11 +97,9 @@
   (let ((attributes (gethash "attributes" description)))
     (when attributes
       (let ((pull-request-id (gethash "pr.id" attributes)))
-        (insert
-         "Pull request: "
-         (yandex-arc/properties/link
-          pull-request-id (concat "https://a.yandex-team.ru/review/" pull-request-id))
-         ?\n)))))
+        (insert "Pull request: "
+                (yandex-arc/properties/link pull-request-id "https://a.yandex-team.ru/review/%s" pull-request-id)
+                ?\n)))))
 
 
 (defun yandex-arc/revision/insert-message-section (description)

@@ -40,6 +40,7 @@
               'yandex-arc/properties/hash-property hash))
 
 
-(defun yandex-arc/properties/link (name href)
-  (propertize (button-buttonize name 'browse-url href)
-              'yandex-arc/properties/type-property 'link))
+(defun yandex-arc/properties/link (name href-format &rest args)
+  (let ((href (apply 'format (append (list href-format) args))))
+    (propertize (button-buttonize name 'browse-url href)
+                'yandex-arc/properties/type-property 'link)))
