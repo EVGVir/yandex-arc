@@ -15,6 +15,7 @@
   [["Transient and dwim commands"
     ("b"        "Branch"                  yandex-arc/actions/branch-transient)
     ("c"        "Commit"                  yandex-arc/actions/commit-transient)
+    ("d"        "Diff"                    yandex-arc/actions/diff-transient)
     ("F"        "Pull"                    yandex-arc/actions/pull)
     ("P"        "Pull request"            yandex-arc/actions/pull-request-transient)
     ("y"        "Show all branches"       yandex-arc/actions/show-all-branches)
@@ -35,6 +36,7 @@
   "?"        'yandex-arc/transient
   "b"        'yandex-arc/actions/branch-transient
   "c"        'yandex-arc/actions/commit-transient
+  "d"        'yandex-arc/actions/diff-transient
   "F"        'yandex-arc/actions/pull
   "g"        'revert-buffer
   "h"        'yandex-arc/transient
@@ -109,21 +111,23 @@ files taken from STATUS."
       (yandex-arc/insert-files-section "Staged changes" staged :staged))))
 
 
-(defun yandex-arc/insert-files-section (heading file-names diff-type)
+(defun yandex-arc/insert-files-section (heading file-names diff-type &optional commit)
   "Inserts a section with information about files FILE-NAMES. If
 DIFF-TYPE is not nil then diff is displayed for each
 file. Possible values of DIFF-TYPE are described in
-`yandex-arc/shell/diff-file'."
+`yandex-arc/shell/diff-file'.
+
+COMMIT is used only with DIFF-TYPE equal to :commit."
   (magit-insert-section (yandex-arc/files-section)
     (magit-insert-heading
       (propertize heading 'font-lock-face 'magit-section-heading)
       ":") ; Column at the end of the heading is replaced on subsections number.
     (dolist (file-name file-names)
-      (yandex-arc/insert-file-section file-name diff-type))
+      (yandex-arc/insert-file-section file-name diff-type commit))
     (insert ?\n)))
 
 
-(defun yandex-arc/insert-file-section (file-name diff-type)
+(defun yandex-arc/insert-file-section (file-name diff-type &optional commit)
   "Insert a section with a file."
   (magit-insert-section (magit-file-section file-name t)
     (if diff-type
@@ -132,7 +136,7 @@ file. Possible values of DIFF-TYPE are described in
             (propertize file-name 'font-lock-face 'magit-diff-file-heading))
           (magit-insert-section-body
             (yandex-arc/insert-diff-hunk-sections
-             (yandex-arc/split-diff (oref (yandex-arc/shell/diff-file file-name diff-type) :value)))
+             (yandex-arc/split-diff (oref (yandex-arc/shell/diff-file file-name diff-type commit) :value)))
             (insert ?\n)))
       (insert (propertize file-name 'font-lock-face 'magit-filename) ?\n))))
 

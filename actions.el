@@ -192,3 +192,14 @@ Returns the code returned by `arc`."
   (interactive)
   (yandex-arc/shell/pull)
   (yandex-arc/revert-arc-buffer nil nil))
+
+
+;; Diff
+(transient-define-prefix yandex-arc/actions/diff-transient ()
+  [["Actions"
+    ("c" "Show commit" yandex-arc/actions/show-commit)]])
+
+
+(defun yandex-arc/actions/show-commit (commit)
+  (interactive "sShow commit: ")
+  (yandex-arc/revision/show-revision commit))

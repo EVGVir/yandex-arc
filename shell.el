@@ -70,13 +70,15 @@
   (yandex-arc/shell/run-arc-text "reset" "HEAD" file-name))
 
 
-(defun yandex-arc/shell/diff-file (file-name diff-type)
+(defun yandex-arc/shell/diff-file (file-name diff-type &optional commit)
   "Returns diff for FILE as a string. DIFF-TYPE controls the diff type:
 * :staged   - diff between HEAD and index.
-* :unstaged - diff between working tree and index."
+* :unstaged - diff between working tree and index.
+* :commit   - diff between COMMIT^..COMMIT."
   (cond
    ((eq diff-type :staged)   (yandex-arc/shell/diff-staged   file-name))
-   ((eq diff-type :unstaged) (yandex-arc/shell/diff-unstaged file-name))))
+   ((eq diff-type :unstaged) (yandex-arc/shell/diff-unstaged file-name))
+   ((eq diff-type :commit)   (yandex-arc/shell/diff-commits  (concat commit "^") commit file-name))))
 
 
 (defun yandex-arc/shell/diff-unstaged (file-name)
@@ -87,6 +89,16 @@
 (defun yandex-arc/shell/diff-staged (file-name)
   "Returns diff index and HEAD."
   (yandex-arc/shell/run-arc-text "diff" "--color" "never" "--cached" file-name))
+
+
+(defun yandex-arc/shell/diff-commits-file-names-only (from to)
+  "Returns list of files diff FROM..TO."
+  (yandex-arc/shell/run-arc-text "diff" from to "--name-only"))
+
+
+(defun yandex-arc/shell/diff-commits (from to file-name)
+  "Returns list of files diff FROM..TO."
+  (yandex-arc/shell/run-arc-text "diff" "--no-color" from to file-name))
 
 
 (defun yandex-arc/shell/stash-list ()
@@ -142,3 +154,7 @@ stack. If --INDEX is t then index state is restored."
 
 (defun yandex-arc/shell/pull ()
   (yandex-arc/shell/run-arc-text "pull"))
+
+
+(defun yandex-arc/shell/log-describe-commit (commit)
+  (yandex-arc/shell/run-arc-json "log" commit "--max-count" "1"))
