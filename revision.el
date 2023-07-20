@@ -9,15 +9,15 @@
   "Commit the revision buffer shows information about.")
 
 
+(defvar-keymap yandex-arc-revision-mode-map
+  :doc "Keymap for `yandex-arc-revision-mode'."
+  "<return>" 'yandex-arc/actions/visit-at-point)
+
+
 (define-derived-mode yandex-arc-revision-mode magit-section-mode "arc-revision"
   "Yandex Arc Revision Major Mode."
   (setq-local revert-buffer-function
               (lambda (ignore-auto noconfirm) (yandex-arc/revision/redraw-buffer))))
-
-
-(defvar-keymap yandex-arc-revision-mode-map
-  :doc "Keymap for `yandex-arc-revision-mode'."
-  "<return>" 'yandex-arc/actions/visit-at-point)
 
 
 (defun yandex-arc/revision/show-revision (commit)
