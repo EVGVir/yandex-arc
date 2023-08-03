@@ -50,7 +50,7 @@
    ["Use"
     ("a" "Apply" yandex-arc/actions/stash-apply)
     ("p" "Pop"   yandex-arc/actions/stash-pop)
-    ("k" "Drop"  yandex-arc/actions/not-implemented-message)]])
+    ("k" "Drop"  yandex-arc/actions/stash-drop)]])
 
 
 (defun yandex-arc/actions/stash-push (message)
@@ -87,6 +87,19 @@
         (progn
           (yandex-arc/shell/stash-pop stash-index t)
           (yandex-arc/revert-arc-buffer nil nil))
+      (ding)
+      (message "No stash selected."))))
+
+
+(defun yandex-arc/actions/stash-drop ()
+  "Drops stash at point."
+  (interactive)
+  (let ((stash-index (magit-section-value-if 'yandex-arc/stash-section)))
+    (if stash-index
+        (when (yes-or-no-p (concat "Drop stash@{" (number-to-string stash-index) "}?"))
+          (progn
+            (yandex-arc/shell/stash-drop stash-index)
+            (yandex-arc/revert-arc-buffer nil nil)))
       (ding)
       (message "No stash selected."))))
 

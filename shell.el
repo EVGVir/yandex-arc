@@ -134,6 +134,12 @@ If RESTORE-INDEX-STATE is t then index state is restored."
    "stash" "pop" (number-to-string stash-num) (when restore-index-state "--index")))
 
 
+(defun yandex-arc/shell/stash-drop (stash-num)
+  "Drops stash entry under the number STASH-NUM."
+  (yandex-arc/shell/run-arc-text
+   "stash" "drop" (number-to-string stash-num)))
+
+
 (defun yandex-arc/shell/branch-list ()
   (yandex-arc/shell/run-arc-json "branch" "--list" "--all"))
 
