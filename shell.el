@@ -106,11 +106,15 @@
   (yandex-arc/shell/run-arc-json "stash" "list"))
 
 
-(defun yandex-arc/shell/stash-push (message)
-  "Puts everything into the stash."
+(defun yandex-arc/shell/stash-push (message mode)
+  "Pushes changes into the stash. MODE defines changes to be pushed:
+* :all      - push all changes (worktree and index).
+* :worktree - push worktree changes only."
   (if (string-empty-p message)
       (yandex-arc/shell/run-arc-text "stash" "push")
-    (yandex-arc/shell/run-arc-text "stash" "push" "-m" message)))
+    (cond
+     ((eq mode :all)      (yandex-arc/shell/run-arc-text "stash" "push" "-m" message))
+     ((eq mode :worktree) (yandex-arc/shell/run-arc-text "stash" "push" "--keep-index" "-m" message)))))
 
 
 (defun yandex-arc/shell/stash-apply (stash-num --index)

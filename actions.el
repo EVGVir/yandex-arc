@@ -46,7 +46,7 @@
   [["Stash"
     ("z" "both"     yandex-arc/actions/stash-push)
     ("i" "index"    yandex-arc/actions/not-implemented-message)
-    ("w" "worktree" yandex-arc/actions/not-implemented-message)]
+    ("w" "worktree" yandex-arc/actions/stash-push-worktree)]
    ["Use"
     ("a" "Apply" yandex-arc/actions/stash-apply)
     ("p" "Pop"   yandex-arc/actions/not-implemented-message)
@@ -54,14 +54,21 @@
 
 
 (defun yandex-arc/actions/stash-push (message)
-  "Puts everything into the stash."
+  "Pushes all changes into the stash."
   (interactive "MStash message: ")
-  (message "%s" (oref (yandex-arc/shell/stash-push message) :value))
+  (message "%s" (oref (yandex-arc/shell/stash-push message :all) :value))
+  (yandex-arc/revert-arc-buffer nil nil))
+
+
+(defun yandex-arc/actions/stash-push-worktree (message)
+  "Pushes worktree changes into the stash."
+  (interactive "MStash message: ")
+  (message "%s" (oref (yandex-arc/shell/stash-push message :worktree) :value))
   (yandex-arc/revert-arc-buffer nil nil))
 
 
 (defun yandex-arc/actions/stash-apply ()
-  "Applies the stash at point."
+  "Applies stash at point."
   (interactive)
   (let ((stash-index (magit-section-value-if 'yandex-arc/stash-section)))
     (if stash-index
