@@ -117,11 +117,21 @@
      ((eq mode :worktree) (yandex-arc/shell/run-arc-text "stash" "push" "--keep-index" "-m" message)))))
 
 
-(defun yandex-arc/shell/stash-apply (stash-num --index)
-  "Apply stash entry under number STASH-NUM, not removing it from
-stack. If --INDEX is t then index state is restored."
+(defun yandex-arc/shell/stash-apply (stash-num restore-index-state)
+  "Applies stash entry under the number STASH-NUM, not removing
+it from stack.
+
+If RESTORE-INDEX-STATE is t then index state is restored."
   (yandex-arc/shell/run-arc-text
-   "stash" "apply" (number-to-string stash-num) (when --index "--index")))
+   "stash" "apply" (number-to-string stash-num) (when restore-index-state "--index")))
+
+
+(defun yandex-arc/shell/stash-pop (stash-num restore-index-state)
+  "Pops stash entry under the number STASH-NUM.
+
+If RESTORE-INDEX-STATE is t then index state is restored."
+  (yandex-arc/shell/run-arc-text
+   "stash" "pop" (number-to-string stash-num) (when restore-index-state "--index")))
 
 
 (defun yandex-arc/shell/branch-list ()
