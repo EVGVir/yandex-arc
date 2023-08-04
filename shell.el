@@ -176,5 +176,13 @@ If RESTORE-INDEX-STATE is t then index state is restored."
   (yandex-arc/shell/run-arc-text "pull"))
 
 
+(defun yandex-arc/shell/push (force no-verify publish)
+  (let ((args (list "push")))
+    (if force     (setq args (append args '("--force"))))
+    (if no-verify (setq args (append args '("--no-verify"))))
+    (if publish   (setq args (append args '("--publish"))))
+    (apply 'yandex-arc/shell/run-arc-text args)))
+
+
 (defun yandex-arc/shell/log-describe-commit (commit)
   (yandex-arc/shell/run-arc-json "log" commit "--max-count" "1"))

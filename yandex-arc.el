@@ -17,7 +17,8 @@
     ("c"        "Commit"                  yandex-arc/actions/commit-transient)
     ("d"        "Diff"                    yandex-arc/actions/diff-transient)
     ("F"        "Pull"                    yandex-arc/actions/pull)
-    ("P"        "Pull request"            yandex-arc/actions/pull-request-transient)
+    ("P"        "Push"                    yandex-arc/actions/push-transient)
+    ("R"        "Pull request"            yandex-arc/actions/pull-request-transient)
     ("y"        "Show all branches"       yandex-arc/actions/show-all-branches)
     ("z"        "Stash"                   yandex-arc/actions/stash-transient)]
    ["Applying changes"
@@ -40,7 +41,8 @@
   "F"        'yandex-arc/actions/pull
   "g"        'revert-buffer
   "h"        'yandex-arc/transient
-  "P"        'yandex-arc/actions/pull-request-transient
+  "P"        'yandex-arc/actions/push-transient
+  "R"        'yandex-arc/actions/pull-request-transient
   "s"        'yandex-arc/actions/stage-file
   "u"        'yandex-arc/actions/unstage-file
   "y"        'yandex-arc/actions/show-all-branches

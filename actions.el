@@ -233,6 +233,28 @@ Returns the code returned by `arc`."
   (yandex-arc/revert-arc-buffer nil nil))
 
 
+;; Push
+(transient-define-prefix yandex-arc/actions/push-transient ()
+  ["Arguments"
+   ("-f" "force"                             "--force")
+   ("-n" "disable the pre-push hook"         "--no-verify")
+   ("-p" "publish the latest diff-set in PR" "--publish")]
+  ["Actions"
+   ("p" "push" yandex-arc/actions/push)])
+
+
+(defun yandex-arc/actions/push ()
+  (interactive)
+  (let* ((args (transient-args 'yandex-arc/actions/push-transient))
+         (force     (transient-arg-value "--force"     args))
+         (no-verify (transient-arg-value "--no-verify" args))
+         (publish   (transient-arg-value "--publish"   args))
+         (result (yandex-arc/shell/push force no-verify publish))
+         (return-code (oref result :return-code))
+         (return-value (oref result :value)))
+    (message "%s" return-value)
+    (when (/= return-code 0) (ding))))
+
 ;; Diff
 (transient-define-prefix yandex-arc/actions/diff-transient ()
   [["Actions"
