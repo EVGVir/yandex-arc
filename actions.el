@@ -264,3 +264,27 @@ Returns the code returned by `arc`."
 (defun yandex-arc/actions/show-commit (commit)
   (interactive "sShow commit: ")
   (yandex-arc/revision/show-revision commit))
+
+
+;; Discard
+(defun yandex-arc/actions/discard-at-point ()
+  (interactive)
+  (magit-section-case
+    ('yandex-arc/files-section
+     (yandex-arc/actions/not-implemented-message))
+    ('magit-file-section
+     (cond
+      ((eq (magit-section-parent-value (magit-current-section)) :unstaged)
+       (yandex-arc/actions/discard-file (magit-section-value-if 'magit-file-section)))
+      (t
+       (yandex-arc/actions/not-implemented-message))))
+    ('yandex-arc/stashes-section
+     (yandex-arc/actions/not-implemented-message))
+    ('yandex-arc/stash-section
+     (yandex-arc/actions/stash-drop))))
+
+
+(defun yandex-arc/actions/discard-file (file)
+  (when (yes-or-no-p (concat "Discard unstaged changes in " file))
+    (yandex-arc/shell/discard-file file)
+    (yandex-arc/revert-arc-buffer nil nil)))

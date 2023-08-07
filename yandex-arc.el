@@ -22,6 +22,7 @@
     ("y"        "Show all branches"       yandex-arc/actions/show-all-branches)
     ("z"        "Stash"                   yandex-arc/actions/stash-transient)]
    ["Applying changes"
+    ("k"        "Discard"                 yandex-arc/actions/discard-at-point)
     ("s"        "Stage"                   yandex-arc/actions/stage-file)
     ("u"        "Unstage"                 yandex-arc/actions/unstage-file)]
    ["Essential commands"
@@ -41,6 +42,7 @@
   "F"        'yandex-arc/actions/pull
   "g"        'revert-buffer
   "h"        'yandex-arc/transient
+  "k"        'yandex-arc/actions/discard-at-point
   "P"        'yandex-arc/actions/push-transient
   "R"        'yandex-arc/actions/pull-request-transient
   "s"        'yandex-arc/actions/stage-file
@@ -103,29 +105,35 @@ files taken from STATUS."
         (unmerged  (yandex-arc/get-changed-paths status "unmerged"))
         (staged    (yandex-arc/get-changed-paths status "staged")))
     (when (> (length untracked) 0)
-      (yandex-arc/insert-files-section "Untracked files" untracked nil))
+      (yandex-arc/insert-files-section :untracked untracked nil))
     (when (> (length unstaged) 0)
-      (yandex-arc/insert-files-section "Unstaged changes" unstaged :unstaged))
+      (yandex-arc/insert-files-section :unstaged unstaged :unstaged))
     (when (> (length unmerged) 0)
-      (yandex-arc/insert-files-section "Unmerged changes" unmerged nil))
+      (yandex-arc/insert-files-section :unmerged unmerged nil))
     (when (> (length staged) 0)
-      (yandex-arc/insert-files-section "Staged changes" staged :staged))))
+      (yandex-arc/insert-files-section :staged staged :staged))))
 
 
-(defun yandex-arc/insert-files-section (heading file-names diff-type &optional commit)
+(defun yandex-arc/insert-files-section (files-type file-names diff-type &optional commit)
   "Inserts a section with information about files FILE-NAMES. If
 DIFF-TYPE is not nil then diff is displayed for each
 file. Possible values of DIFF-TYPE are described in
 `yandex-arc/shell/diff-file'.
 
 COMMIT is used only with DIFF-TYPE equal to :commit."
-  (magit-insert-section (yandex-arc/files-section)
-    (magit-insert-heading
-      (yandex-arc/properties/section-heading heading)
-      ":") ; Column at the end of the heading is replaced on subsections number.
-    (dolist (file-name file-names)
-      (yandex-arc/insert-file-section file-name diff-type commit))
-    (insert ?\n)))
+  (let ((heading (cond
+                  ((eq files-type :untracked) "Untracked files")
+                  ((eq files-type :unstaged)  "Unstaged changes")
+                  ((eq files-type :unmerged)  "Unmerged changes")
+                  ((eq files-type :staged)    "Staged changes")
+                  ((eq files-type :changes)   "Changes"))))
+    (magit-insert-section (yandex-arc/files-section files-type)
+      (magit-insert-heading
+        (yandex-arc/properties/section-heading heading)
+        ":") ; Column at the end of the heading is replaced on subsections number.
+      (dolist (file-name file-names)
+        (yandex-arc/insert-file-section file-name diff-type commit))
+      (insert ?\n))))
 
 
 (defun yandex-arc/insert-file-section (file-name diff-type &optional commit)

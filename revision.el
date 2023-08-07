@@ -40,7 +40,7 @@
             (yandex-arc/revision/insert-summary-section description)
             (yandex-arc/revision/insert-message-section description)))
         (yandex-arc/insert-files-section
-         "Changes"
+         :changes
          (yandex-arc/revision/diff-commits-file-names-only yandex-arc/revision/commit)
          :commit
          yandex-arc/revision/commit)))))

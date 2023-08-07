@@ -186,3 +186,7 @@ If RESTORE-INDEX-STATE is t then index state is restored."
 
 (defun yandex-arc/shell/log-describe-commit (commit)
   (yandex-arc/shell/run-arc-json "log" commit "--max-count" "1"))
+
+
+(defun yandex-arc/shell/discard-file (file)
+  (yandex-arc/shell/run-arc-text "checkout" file))
