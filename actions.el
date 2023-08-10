@@ -72,9 +72,11 @@
   (interactive)
   (let ((stash-index (magit-section-value-if 'yandex-arc/stash-section)))
     (if stash-index
-        (progn
-          (yandex-arc/shell/stash-apply stash-index t)
-          (yandex-arc/revert-arc-buffer nil nil))
+        (let ((result (yandex-arc/shell/stash-apply stash-index t)))
+          (if (= (oref result :return-code) 0)
+              (yandex-arc/revert-arc-buffer nil nil)
+            (ding t)
+            (message "%s" (oref result :value))))
       (ding)
       (message "No stash selected."))))
 
@@ -84,9 +86,11 @@
   (interactive)
   (let ((stash-index (magit-section-value-if 'yandex-arc/stash-section)))
     (if stash-index
-        (progn
-          (yandex-arc/shell/stash-pop stash-index t)
-          (yandex-arc/revert-arc-buffer nil nil))
+        (let ((result (yandex-arc/shell/stash-pop stash-index t)))
+          (if (= (oref result :return-code) 0)
+              (yandex-arc/revert-arc-buffer nil nil)
+            (ding t)
+            (message "%s" (oref result :value))))
       (ding)
       (message "No stash selected."))))
 
