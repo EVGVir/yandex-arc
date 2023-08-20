@@ -93,10 +93,11 @@
 
 (defun yandex-arc/revision/print-local-branches (description)
   (let ((branches (gethash "branches" description)))
-    (when (gethash "head" branches)
-      (insert (yandex-arc/properties/branch-name "HEAD") " "))
-    (seq-doseq (branch (gethash "local" branches))
-      (insert (yandex-arc/properties/branch-name branch) " "))))
+    (when branches
+      (when (gethash "head" branches)
+        (insert (yandex-arc/properties/branch-name "HEAD") " "))
+      (seq-doseq (branch (gethash "local" branches))
+        (insert (yandex-arc/properties/branch-name branch) " ")))))
 
 
 (defun yandex-arc/revision/print-attributes (description)
