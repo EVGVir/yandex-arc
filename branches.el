@@ -5,12 +5,7 @@
 (defclass yandex-arc/branch-section (magit-section) ())
 
 
-(defvar-keymap yandex-arc-branches-mode-map
-  :doc "Keymap for `yandex-arc-branches-mode'."
-  "<return>" 'yandex-arc/actions/visit-at-point)
-
-
-(define-derived-mode yandex-arc-branches-mode magit-section-mode "arc-branches"
+(define-derived-mode yandex-arc-branches-mode yandex-arc-mode "arc-branches"
   "Yandex Arc Branches Major Mode."
   (setq-local revert-buffer-function 'yandex-arc/branches/revert-branches-buffer))
 
