@@ -132,7 +132,8 @@
   "Creates a new branch BRANCH-NAME.
 
 Returns the code returned by `arc`."
-  (interactive "sCreate branch starting at: \nsName for new branch: ")
+  (interactive "sCreate branch starting at (default \"trunk\"): \nsName for new branch: ")
+  (if (length= start-at 0) (setq start-at "trunk"))
   (let* ((result (yandex-arc/shell/branch-create start-at branch-name))
          (return-code (oref result :return-code)))
     (when (/= return-code 0)
@@ -153,7 +154,7 @@ Returns the code returned by `arc`."
 
 (defun yandex-arc/actions/create-and-checkout (start-at branch-name)
   "Creates and checkouts a new branch BRANCH-NAME."
-  (interactive "sCreate and checkout branch starting at: \nsName for new branch: ")
+  (interactive "sCreate and checkout branch starting at (default \"trunk\"): \nsName for new branch: ")
   (when (= (yandex-arc/actions/create-new-branch start-at branch-name) 0)
     (yandex-arc/actions/checkout branch-name)))
 
