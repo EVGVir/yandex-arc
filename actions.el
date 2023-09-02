@@ -144,7 +144,10 @@ Returns the code returned by `arc`."
 
 (defun yandex-arc/actions/checkout (branch-name-or-revision)
   "Checkouts BRANCH-NAME-OR-REVISION."
-  (interactive "sCheckout: ")
+  (interactive
+   (let ((branch-name (get-text-property (point) 'yandex-arc/properties/branch-name-property)))
+     (list (read-from-minibuffer "Checkout: " branch-name))))
+
   (let ((result (yandex-arc/shell/checkout branch-name-or-revision)))
     (when (/= (oref result :return-code) 0)
       (ding t)
