@@ -28,7 +28,7 @@
     (dolist (file-name file-names)
       (yandex-arc/shell/stage file-name))
     (when (length file-names)
-      (yandex-arc/revert-arc-buffer nil nil))))
+      (revert-buffer))))
 
 
 (defun yandex-arc/actions/unstage-file ()
@@ -38,7 +38,7 @@
     (dolist (file-name file-names)
       (yandex-arc/shell/unstage file-name))
     (when (length file-names)
-      (yandex-arc/revert-arc-buffer nil nil))))
+      (revert-buffer))))
 
 
 ;; Stashing
@@ -57,14 +57,14 @@
   "Pushes all changes into the stash."
   (interactive "MStash message: ")
   (message "%s" (oref (yandex-arc/shell/stash-push message :all) :value))
-  (yandex-arc/revert-arc-buffer nil nil))
+  (revert-buffer))
 
 
 (defun yandex-arc/actions/stash-push-worktree (message)
   "Pushes worktree changes into the stash."
   (interactive "MStash message: ")
   (message "%s" (oref (yandex-arc/shell/stash-push message :worktree) :value))
-  (yandex-arc/revert-arc-buffer nil nil))
+  (revert-buffer))
 
 
 (defun yandex-arc/actions/stash-apply ()
@@ -74,7 +74,7 @@
     (if stash-index
         (let ((result (yandex-arc/shell/stash-apply stash-index t)))
           (if (= (oref result :return-code) 0)
-              (yandex-arc/revert-arc-buffer nil nil)
+              (revert-buffer)
             (ding t)
             (message "%s" (oref result :value))))
       (ding)
@@ -88,7 +88,7 @@
     (if stash-index
         (let ((result (yandex-arc/shell/stash-pop stash-index t)))
           (if (= (oref result :return-code) 0)
-              (yandex-arc/revert-arc-buffer nil nil)
+              (revert-buffer)
             (ding t)
             (message "%s" (oref result :value))))
       (ding)
@@ -103,7 +103,7 @@
         (when (yes-or-no-p (concat "Drop stash@{" (number-to-string stash-index) "}?"))
           (progn
             (yandex-arc/shell/stash-drop stash-index)
-            (yandex-arc/revert-arc-buffer nil nil)))
+            (revert-buffer)))
       (ding)
       (message "No stash selected."))))
 
@@ -152,7 +152,7 @@ Returns the code returned by `arc`."
     (when (/= (oref result :return-code) 0)
       (ding t)
       (message "%s" (oref result :value))))
-  (yandex-arc/revert-arc-buffer nil nil))
+  (revert-buffer))
 
 
 (defun yandex-arc/actions/create-and-checkout (start-at branch-name)
@@ -178,12 +178,12 @@ Returns the code returned by `arc`."
     ("a" "Amend" yandex-arc/actions/amend)]])
 
 
-(defun yandex-arc/actions/revert-arc-buffer-on-process-exit (process event)
+(defun yandex-arc/actions/revert-buffer-on-process-exit (process event)
   "A process sentinel that redraws a buffer on PROCESS exit."
   (unless (process-live-p process)
     (when (/= (process-exit-status process) 0)
       (ding t))
-    (yandex-arc/revert-arc-buffer nil nil)))
+    (revert-buffer)))
 
 
 (defun yandex-arc/actions/commit-filter (process string)
@@ -195,14 +195,14 @@ Returns the code returned by `arc`."
   (interactive)
   (yandex-arc/shell/commit
    'yandex-arc/actions/commit-filter
-   'yandex-arc/actions/revert-arc-buffer-on-process-exit))
+   'yandex-arc/actions/revert-buffer-on-process-exit))
 
 
 (defun yandex-arc/actions/amend ()
   (interactive)
   (yandex-arc/shell/amend
    'yandex-arc/actions/commit-filter
-   'yandex-arc/actions/revert-arc-buffer-on-process-exit))
+   'yandex-arc/actions/revert-buffer-on-process-exit))
 
 
 ;; Pull request
@@ -220,7 +220,7 @@ Returns the code returned by `arc`."
     (message "%s" (oref result :value))
     (if (/= (oref result :return-code) 0)
         (ding t)
-      (yandex-arc/revert-arc-buffer nil nil))))
+      (revert-buffer))))
 
 
 (defun yandex-arc/actions/pull-request-create-filter (process string)
@@ -231,14 +231,14 @@ Returns the code returned by `arc`."
   (interactive)
   (yandex-arc/shell/pull-request-create
    'yandex-arc/actions/pull-request-create-filter
-   'yandex-arc/actions/revert-arc-buffer-on-process-exit))
+   'yandex-arc/actions/revert-buffer-on-process-exit))
 
 
 ;; Pull
 (defun yandex-arc/actions/pull ()
   (interactive)
   (yandex-arc/shell/pull)
-  (yandex-arc/revert-arc-buffer nil nil))
+  (revert-buffer))
 
 
 ;; Push
@@ -295,4 +295,4 @@ Returns the code returned by `arc`."
 (defun yandex-arc/actions/discard-file (file)
   (when (yes-or-no-p (concat "Discard unstaged changes in " file))
     (yandex-arc/shell/discard-file file)
-    (yandex-arc/revert-arc-buffer nil nil)))
+    (revert-buffer)))

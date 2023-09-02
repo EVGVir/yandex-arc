@@ -68,7 +68,7 @@
          (buffer (get-buffer-create (concat "arc: " (file-name-nondirectory default-directory)))))
     (set-buffer buffer)
     (yandex-arc-mode)
-    (yandex-arc/revert-arc-buffer nil nil)
+    (revert-buffer)
     (switch-to-buffer buffer)))
 
 

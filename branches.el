@@ -14,7 +14,7 @@
   (let ((buffer (get-buffer-create (concat "arc-branches: " (file-name-nondirectory default-directory)))))
     (set-buffer buffer)
     (yandex-arc-branches-mode)
-    (yandex-arc/branches/revert-branches-buffer nil nil)
+    (revert-buffer)
     (switch-to-buffer buffer)))
 
 
