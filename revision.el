@@ -104,9 +104,10 @@
   (let ((attributes (gethash "attributes" description)))
     (when attributes
       (let ((pull-request-id (gethash "pr.id" attributes)))
-        (insert "Pull request: "
-                (yandex-arc/properties/link pull-request-id "https://a.yandex-team.ru/review/%s" pull-request-id)
-                ?\n)))))
+        (when pull-request-id
+          (insert "Pull request: "
+                  (yandex-arc/properties/link pull-request-id "https://a.yandex-team.ru/review/%s" pull-request-id)
+                  ?\n))))))
 
 
 (defun yandex-arc/revision/insert-message-section (description)
