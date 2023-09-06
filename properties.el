@@ -15,6 +15,10 @@
               'yandex-arc/properties/branch-name-property branch-name))
 
 
+(defun yandex-arc/properties/get-branch-name-at-point ()
+  (get-text-property (point) 'yandex-arc/properties/branch-name-property))
+
+
 (defun yandex-arc/properties/section-heading (section-name)
   (propertize section-name 'font-lock-face 'magit-section-heading))
 

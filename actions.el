@@ -145,8 +145,9 @@ Returns the code returned by `arc`."
 (defun yandex-arc/actions/checkout (branch-name-or-revision)
   "Checkouts BRANCH-NAME-OR-REVISION."
   (interactive
-   (let ((branch-name (get-text-property (point) 'yandex-arc/properties/branch-name-property)))
-     (list (read-from-minibuffer "Checkout: " branch-name))))
+   (list (read-from-minibuffer
+          "Checkout: "
+          (yandex-arc/properties/get-branch-name-at-point))))
 
   (let ((result (yandex-arc/shell/checkout branch-name-or-revision)))
     (when (/= (oref result :return-code) 0)
@@ -164,7 +165,11 @@ Returns the code returned by `arc`."
 
 (defun yandex-arc/actions/delete-branch (branch-name)
   "Deletes branch BRANCH-NAME."
-  (interactive "sDelete branch: ")
+  (interactive
+   (list (read-from-minibuffer
+          "Delete branch: "
+          (yandex-arc/properties/get-branch-name-at-point))))
+
   (let ((result (yandex-arc/shell/delete-branch branch-name)))
     (when (/= (oref result :return-code) 0) (ding t))
     (message "%s" (oref result :value))))
