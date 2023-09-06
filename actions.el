@@ -171,8 +171,11 @@ Returns the code returned by `arc`."
           (yandex-arc/properties/get-branch-name-at-point))))
 
   (let ((result (yandex-arc/shell/delete-branch branch-name)))
-    (when (/= (oref result :return-code) 0) (ding t))
-    (message "%s" (oref result :value))))
+    (if (/= (oref result :return-code) 0)
+        (ding t)
+      (message "%s" (oref result :value))
+      (when (eq major-mode 'yandex-arc-branches-mode)
+        (revert-buffer)))))
 
 
 ;; Commit
