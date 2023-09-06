@@ -245,8 +245,11 @@ Returns the code returned by `arc`."
 ;; Pull
 (defun yandex-arc/actions/pull ()
   (interactive)
-  (yandex-arc/shell/pull)
-  (revert-buffer))
+  (let ((result (yandex-arc/shell/pull)))
+    (if (= (oref result :return-code) 0)
+        (revert-buffer)
+      (ding t)
+      (message "%s" (oref result :value)))))
 
 
 ;; Push
