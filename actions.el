@@ -119,7 +119,8 @@
    ["List"
     ("l" "list all branches" yandex-arc/actions/show-all-branches)]
    ["Do"
-    ("k" "delete"            yandex-arc/actions/delete-branch)]])
+    ("k" "delete"            yandex-arc/actions/delete-branch)
+    ("m" "rename"            yandex-arc/actions/rename-branch)]])
 
 
 (defun yandex-arc/actions/show-all-branches ()
@@ -176,6 +177,20 @@ Returns the code returned by `arc`."
       (message "%s" (oref result :value))
       (when (eq major-mode 'yandex-arc-branches-mode)
         (revert-buffer)))))
+
+
+(defun yandex-arc/actions/rename-branch (from to)
+  "Renames branch with name FROM to name TO."
+  (interactive
+   (let* ((from (read-from-minibuffer "Rename branch: " (yandex-arc/properties/get-branch-name-at-point)))
+          (to   (read-from-minibuffer (concat "Rename branch '" from "', to: "))))
+     (list from to)))
+
+  (let ((result (yandex-arc/shell/rename-branch from to)))
+    (if (/= (oref result :return-code) 0)
+        (ding t)
+      (revert-buffer))
+    (message "%s" (oref result :value))))
 
 
 ;; Commit
