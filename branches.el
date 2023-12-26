@@ -24,16 +24,16 @@
 
 
 (defun yandex-arc/branches/redraw-branches-buffer (branch-infos)
-  (save-excursion
-    (let ((inhibit-read-only t))
-      (erase-buffer)
-      (magit-insert-section (yandex-arc/root-section)
-        (yandex-arc/branches/insert-branches-section
-         "Local branches" nil
-         (seq-filter (lambda (branch-info) (gethash "local" branch-info)) branch-infos))
-        (yandex-arc/branches/insert-branches-section
-         "Remote branches" t
-         (seq-filter (lambda (branch-info) (not (gethash "local" branch-info))) branch-infos))))))
+  (yandex-arc/util/save-line-and-column
+   (let ((inhibit-read-only t))
+     (erase-buffer)
+     (magit-insert-section (yandex-arc/root-section)
+       (yandex-arc/branches/insert-branches-section
+        "Local branches" nil
+        (seq-filter (lambda (branch-info) (gethash "local" branch-info)) branch-infos))
+       (yandex-arc/branches/insert-branches-section
+        "Remote branches" t
+        (seq-filter (lambda (branch-info) (not (gethash "local" branch-info))) branch-infos))))))
 
 
 (defun yandex-arc/branches/insert-branches-section (section-name hide-section branch-infos)

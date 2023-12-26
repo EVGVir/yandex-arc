@@ -80,13 +80,13 @@
 
 
 (defun yandex-arc/redraw-arc-buffer (info status stash-info)
-  (save-excursion
-    (let ((inhibit-read-only t))
-      (erase-buffer)
-      (magit-insert-section (yandex-arc/root-section)
-        (yandex-arc/print-head-info info)
-        (yandex-arc/insert-status-section status)
-        (yandex-arc/insert-stashes-section (oref (yandex-arc/shell/stash-list) :value))))))
+  (yandex-arc/util/save-line-and-column
+   (let ((inhibit-read-only t))
+     (erase-buffer)
+     (magit-insert-section (yandex-arc/root-section)
+       (yandex-arc/print-head-info info)
+       (yandex-arc/insert-status-section status)
+       (yandex-arc/insert-stashes-section (oref (yandex-arc/shell/stash-list) :value))))))
 
 
 (defun yandex-arc/print-head-info (info)

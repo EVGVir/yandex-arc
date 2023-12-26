@@ -30,20 +30,20 @@
 
 
 (defun yandex-arc/revision/redraw-buffer ()
-  (save-excursion
-    (let ((inhibit-read-only t))
-      (erase-buffer)
-      (setq-local header-line-format yandex-arc/revision/commit)
-      (magit-insert-section (yandex-arc/root-section)
-        (when (not (yandex-arc/revision/is-stash yandex-arc/revision/commit))
-          (let ((description (yandex-arc/revision/get-commit-description yandex-arc/revision/commit)))
-            (yandex-arc/revision/insert-summary-section description)
-            (yandex-arc/revision/insert-message-section description)))
-        (yandex-arc/insert-files-section
-         :changes
-         (yandex-arc/revision/diff-commits-file-names-only yandex-arc/revision/commit)
-         :commit
-         yandex-arc/revision/commit)))))
+  (yandex-arc/util/save-line-and-column
+   (let ((inhibit-read-only t))
+     (erase-buffer)
+     (setq-local header-line-format yandex-arc/revision/commit)
+     (magit-insert-section (yandex-arc/root-section)
+       (when (not (yandex-arc/revision/is-stash yandex-arc/revision/commit))
+         (let ((description (yandex-arc/revision/get-commit-description yandex-arc/revision/commit)))
+           (yandex-arc/revision/insert-summary-section description)
+           (yandex-arc/revision/insert-message-section description)))
+       (yandex-arc/insert-files-section
+        :changes
+        (yandex-arc/revision/diff-commits-file-names-only yandex-arc/revision/commit)
+        :commit
+        yandex-arc/revision/commit)))))
 
 
 (defun yandex-arc/revision/is-stash (commit)
