@@ -308,6 +308,8 @@ Returns the code returned by `arc`."
      (yandex-arc/actions/not-implemented-message))
     ('magit-file-section
      (cond
+      ((eq (magit-section-parent-value (magit-current-section)) :untracked)
+       (yandex-arc/actions/delete-file (magit-section-value-if 'magit-file-section)))
       ((eq (magit-section-parent-value (magit-current-section)) :unstaged)
        (yandex-arc/actions/discard-file (magit-section-value-if 'magit-file-section)))
       (t
@@ -321,4 +323,10 @@ Returns the code returned by `arc`."
 (defun yandex-arc/actions/discard-file (file)
   (when (yes-or-no-p (concat "Discard unstaged changes in " file))
     (yandex-arc/shell/discard-file file)
+    (revert-buffer)))
+
+
+(defun yandex-arc/actions/delete-file (file)
+  (when (yes-or-no-p (concat "Trash file \"" file "\""))
+    (delete-file file)
     (revert-buffer)))
