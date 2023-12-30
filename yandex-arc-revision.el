@@ -63,22 +63,22 @@
 
 (defun yandex-arc/revision/get-commit-description (commit)
   (let ((description (yandex-arc/shell/log-describe-commit commit)))
-    (cond ((/= (oref description :return-code) 0)
-           (user-error "%s" (oref description :value)))
-          ((= (length (oref description :value)) 0)
+    (cond ((/= (slot-value description 'return-code) 0)
+           (user-error "%s" (slot-value description 'value)))
+          ((= (length (slot-value description 'value)) 0)
            (user-error "There is no information about commit \'%s\'." commit))
           (t ; No errors
-           (elt (oref description :value) 0)))))
+           (elt (slot-value description 'value) 0)))))
 
 
 (defun yandex-arc/revision/diff-commits-file-names-only (commit)
   (let ((result (yandex-arc/shell/diff-commits-file-names-only (concat commit "^") commit)))
-    (cond ((/= (oref result :return-code) 0)
-           (user-error "%s" (oref result :value)))
+    (cond ((/= (slot-value result 'return-code) 0)
+           (user-error "%s" (slot-value result 'value)))
           (t ; No errors
            (seq-map
             (lambda (file-name) (yandex-arc/shell/normalize-string file-name))
-            (split-string (oref result :value)))))))
+            (split-string (slot-value result 'value)))))))
 
 
 (defun yandex-arc/revision/insert-summary-section (description)

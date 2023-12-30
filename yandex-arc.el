@@ -75,7 +75,7 @@
 
 (defun yandex-arc/mode-init ()
   "Initializes Yandex Arc Major Mode"
-  (let* ((default-directory (concat (file-remote-p default-directory) (oref (yandex-arc/shell/root) :value)))
+  (let* ((default-directory (concat (file-remote-p default-directory) (slot-value (yandex-arc/shell/root) 'value)))
          (buffer (get-buffer-create (concat "arc: " (file-name-nondirectory default-directory)))))
     (set-buffer buffer)
     (yandex-arc-mode)
@@ -86,9 +86,9 @@
 (defun yandex-arc/revert-arc-buffer (ignore-auto noconfirm)
   (ignore ignore-auto noconfirm)
   (yandex-arc/redraw-arc-buffer
-   (oref (yandex-arc/shell/info) :value)
-   (oref (yandex-arc/shell/status) :value)
-   (oref (yandex-arc/shell/stash-list) :value)))
+   (slot-value (yandex-arc/shell/info) 'value)
+   (slot-value (yandex-arc/shell/status) 'value)
+   (slot-value (yandex-arc/shell/stash-list) 'value)))
 
 
 (defun yandex-arc/redraw-arc-buffer (info status stash-info)
@@ -157,7 +157,7 @@ COMMIT is used only with DIFF-TYPE equal to :commit."
             (yandex-arc/properties/diff-file-heading file-name))
           (magit-insert-section-body
             (yandex-arc/insert-diff-hunk-sections
-             (yandex-arc/split-diff (oref (yandex-arc/shell/diff-file file-name diff-type commit) :value)))
+             (yandex-arc/split-diff (slot-value (yandex-arc/shell/diff-file file-name diff-type commit) 'value)))
             (insert ?\n)))
       (insert (yandex-arc/properties/file-name file-name) ?\n))))
 
@@ -182,10 +182,10 @@ LOCATION can be \"changed\", \"staged\" or \"untracked\"."
 (defun yandex-arc/get-file-names-from-section-at-point ()
   (let ((section (magit-current-section)))
     (cond ((magit-section-match 'magit-file-section section)
-           (list (oref section value)))
+           (list (slot-value section 'value)))
           ((magit-section-match 'yandex-arc/files-section section)
-           (seq-map (lambda (section) (oref section value))
-                    (oref section children))))))
+           (seq-map (lambda (section) (slot-value section 'value))
+                    (slot-value section 'children))))))
 
 
 (defun yandex-arc/split-diff (diff)

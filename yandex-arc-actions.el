@@ -8,6 +8,7 @@
 (require 'yandex-arc-revision)
 (require 'yandex-arc-shell)
 
+(require 'eieio)
 (require 'magit-section)
 (require 'transient)
 
@@ -68,14 +69,14 @@
 (defun yandex-arc/actions/stash-push (message)
   "Pushes all changes into the stash."
   (interactive "MStash message: ")
-  (message "%s" (oref (yandex-arc/shell/stash-push message :all) :value))
+  (message "%s" (slot-value (yandex-arc/shell/stash-push message :all) 'value))
   (revert-buffer))
 
 
 (defun yandex-arc/actions/stash-push-worktree (message)
   "Pushes worktree changes into the stash."
   (interactive "MStash message: ")
-  (message "%s" (oref (yandex-arc/shell/stash-push message :worktree) :value))
+  (message "%s" (slot-value (yandex-arc/shell/stash-push message :worktree) 'value))
   (revert-buffer))
 
 
@@ -85,10 +86,10 @@
   (let ((stash-index (magit-section-value-if 'yandex-arc/stash-section)))
     (if stash-index
         (let ((result (yandex-arc/shell/stash-apply stash-index t)))
-          (if (= (oref result :return-code) 0)
+          (if (= (slot-value result 'return-code) 0)
               (revert-buffer)
             (ding t)
-            (message "%s" (oref result :value))))
+            (message "%s" (slot-value result 'value))))
       (ding)
       (message "No stash selected."))))
 
@@ -99,10 +100,10 @@
   (let ((stash-index (magit-section-value-if 'yandex-arc/stash-section)))
     (if stash-index
         (let ((result (yandex-arc/shell/stash-pop stash-index t)))
-          (if (= (oref result :return-code) 0)
+          (if (= (slot-value result 'return-code) 0)
               (revert-buffer)
             (ding t)
-            (message "%s" (oref result :value))))
+            (message "%s" (slot-value result 'value))))
       (ding)
       (message "No stash selected."))))
 
@@ -148,10 +149,10 @@ Returns the code returned by `arc`."
   (interactive "sCreate branch starting at (default \"trunk\"): \nsName for new branch: ")
   (if (length= start-at 0) (setq start-at "trunk"))
   (let* ((result (yandex-arc/shell/branch-create start-at branch-name))
-         (return-code (oref result :return-code)))
+         (return-code (slot-value result 'return-code)))
     (when (/= return-code 0)
       (ding t)
-      (message "%s" (oref result :value)))
+      (message "%s" (slot-value result 'value)))
     return-code))
 
 
@@ -163,9 +164,9 @@ Returns the code returned by `arc`."
           (yandex-arc/properties/get-branch-name-at-point))))
 
   (let ((result (yandex-arc/shell/checkout branch-name-or-revision)))
-    (when (/= (oref result :return-code) 0)
+    (when (/= (slot-value result 'return-code) 0)
       (ding t)
-      (message "%s" (oref result :value))))
+      (message "%s" (slot-value result 'value))))
   (revert-buffer))
 
 
@@ -184,9 +185,9 @@ Returns the code returned by `arc`."
           (yandex-arc/properties/get-branch-name-at-point))))
 
   (let ((result (yandex-arc/shell/delete-branch branch-name)))
-    (if (/= (oref result :return-code) 0)
+    (if (/= (slot-value result 'return-code) 0)
         (ding t)
-      (message "%s" (oref result :value))
+      (message "%s" (slot-value result 'value))
       (when (eq major-mode 'yandex-arc-branches-mode)
         (revert-buffer)))))
 
@@ -199,10 +200,10 @@ Returns the code returned by `arc`."
      (list from to)))
 
   (let ((result (yandex-arc/shell/rename-branch from to)))
-    (if (/= (oref result :return-code) 0)
+    (if (/= (slot-value result 'return-code) 0)
         (ding t)
       (revert-buffer))
-    (message "%s" (oref result :value))))
+    (message "%s" (slot-value result 'value))))
 
 
 ;; Commit
@@ -254,8 +255,8 @@ Returns the code returned by `arc`."
   "Checkouts pull request with the specified ID."
   (interactive "nCheckout pull request: ")
   (let ((result (yandex-arc/shell/pull-request-checkout id)))
-    (message "%s" (oref result :value))
-    (if (/= (oref result :return-code) 0)
+    (message "%s" (slot-value result 'value))
+    (if (/= (slot-value result 'return-code) 0)
         (ding t)
       (revert-buffer))))
 
@@ -276,10 +277,10 @@ Returns the code returned by `arc`."
 (defun yandex-arc/actions/pull ()
   (interactive)
   (let ((result (yandex-arc/shell/pull)))
-    (if (= (oref result :return-code) 0)
+    (if (= (slot-value result 'return-code) 0)
         (revert-buffer)
       (ding t)
-      (message "%s" (oref result :value)))))
+      (message "%s" (slot-value result 'value)))))
 
 
 ;; Push
@@ -299,8 +300,8 @@ Returns the code returned by `arc`."
          (no-verify (transient-arg-value "--no-verify" args))
          (publish   (transient-arg-value "--publish"   args))
          (result (yandex-arc/shell/push force no-verify publish))
-         (return-code (oref result :return-code))
-         (return-value (oref result :value)))
+         (return-code (slot-value result 'return-code))
+         (return-value (slot-value result 'value)))
     (message "%s" return-value)
     (when (/= return-code 0) (ding))))
 
