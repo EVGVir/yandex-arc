@@ -28,6 +28,7 @@
 
 
 (defun yandex-arc/branches/revert-branches-buffer (ignore-auto noconfirm)
+  (ignore ignore-auto noconfirm)
   (yandex-arc/branches/redraw-branches-buffer
    (append (oref (yandex-arc/shell/branch-list) :value) nil))) ; Append converts vector to list.
 

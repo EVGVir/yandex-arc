@@ -26,7 +26,9 @@
 (define-derived-mode yandex-arc-revision-mode magit-section-mode "arc-revision"
   "Yandex Arc Revision Major Mode."
   (setq-local revert-buffer-function
-              (lambda (ignore-auto noconfirm) (yandex-arc/revision/redraw-buffer))))
+              (lambda (ignore-auto noconfirm)
+                (ignore ignore-auto noconfirm)
+                (yandex-arc/revision/redraw-buffer))))
 
 
 (defun yandex-arc/revision/show-revision (commit)

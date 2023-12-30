@@ -215,6 +215,7 @@ Returns the code returned by `arc`."
 
 (defun yandex-arc/actions/revert-buffer-on-process-exit (process event)
   "A process sentinel that redraws a buffer on PROCESS exit."
+  (ignore event)
   (unless (process-live-p process)
     (when (/= (process-exit-status process) 0)
       (ding t))
@@ -222,6 +223,7 @@ Returns the code returned by `arc`."
 
 
 (defun yandex-arc/actions/commit-filter (process string)
+  (ignore process)
   (when (string-match-p "nothing to commit!" string)
     (message "nothing to commit!")))
 
@@ -259,6 +261,7 @@ Returns the code returned by `arc`."
 
 
 (defun yandex-arc/actions/pull-request-create-filter (process string)
+  (ignore process)
   (message (yandex-arc/shell/normalize-string string)))
 
 

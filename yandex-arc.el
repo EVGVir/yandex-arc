@@ -84,6 +84,7 @@
 
 
 (defun yandex-arc/revert-arc-buffer (ignore-auto noconfirm)
+  (ignore ignore-auto noconfirm)
   (yandex-arc/redraw-arc-buffer
    (oref (yandex-arc/shell/info) :value)
    (oref (yandex-arc/shell/status) :value)
@@ -97,7 +98,7 @@
      (magit-insert-section (yandex-arc/root-section)
        (yandex-arc/print-head-info info)
        (yandex-arc/insert-status-section status)
-       (yandex-arc/insert-stashes-section (oref (yandex-arc/shell/stash-list) :value))))))
+       (yandex-arc/insert-stashes-section stash-info)))))
 
 
 (defun yandex-arc/print-head-info (info)
