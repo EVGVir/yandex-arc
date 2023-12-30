@@ -1,5 +1,11 @@
 ;; -*- lexical-binding: t; -*-
 
+(provide 'yandex-arc-shell)
+
+(require 'eieio)
+(require 'with-editor)
+
+
 (defvar-local yandex-arc/shell/arc-bin "arc"
   "Yandex Arc binary.")
 

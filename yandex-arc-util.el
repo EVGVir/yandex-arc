@@ -1,5 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 
+(provide 'yandex-arc-util)
+
+
 (defmacro yandex-arc/util/save-line-and-column (body)
   (let ((line   (gensym "line"))
         (column (gensym "column")))

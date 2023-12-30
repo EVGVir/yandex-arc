@@ -1,5 +1,14 @@
 ;; -*- lexical-binding: t; -*-
 
+(provide 'yandex-arc-revision)
+
+(require 'yandex-arc-actions)
+(require 'yandex-arc-properties)
+(require 'yandex-arc-shell)
+(require 'yandex-arc-util)
+
+(require 'eieio)
+
 
 (defclass yandex-arc/revision/summary-section (magit-section) ())
 (defclass yandex-arc/revision/message-section (magit-section) ())

@@ -1,10 +1,21 @@
 ;; -*- lexical-binding: t; -*-
 
+(provide 'yandex-arc)
+
+(require 'yandex-arc-actions)
+(require 'yandex-arc-branches)
+(require 'yandex-arc-properties)
+(require 'yandex-arc-revision)
+(require 'yandex-arc-shell)
+(require 'yandex-arc-util)
+
+(require 'eieio)
 (require 'magit)
 (require 'magit-section)
 (require 'transient)
 
 
+;;;###autoload
 (defun yandex-arc ()
   "Starts Yandex Arc Major Mode in the current directory."
   (interactive)

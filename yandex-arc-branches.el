@@ -1,5 +1,14 @@
 ;; -*- lexical-binding: t; -*-
 
+(provide 'yandex-arc-branches)
+
+(require 'yandex-arc-properties)
+(require 'yandex-arc-shell)
+(require 'yandex-arc-util)
+
+(require 'eieio)
+(require 'magit-section)
+
 
 (defclass yandex-arc/branches-section (magit-section) ())
 (defclass yandex-arc/branch-section (magit-section) ())

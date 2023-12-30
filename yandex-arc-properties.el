@@ -1,5 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
+(provide 'yandex-arc-properties)
+
 
 (defun yandex-arc/properties/branch-name (branch-name)
   (propertize branch-name

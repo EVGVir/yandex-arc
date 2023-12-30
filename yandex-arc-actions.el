@@ -1,5 +1,17 @@
 ;; -*- lexical-binding: t; -*-
 
+(provide 'yandex-arc-actions)
+
+(require 'yandex-arc)
+(require 'yandex-arc-branches)
+(require 'yandex-arc-properties)
+(require 'yandex-arc-revision)
+(require 'yandex-arc-shell)
+
+(require 'magit-section)
+(require 'transient)
+
+
 (defun yandex-arc/actions/not-implemented-message ()
   (interactive)
   (ding t)
