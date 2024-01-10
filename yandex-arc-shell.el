@@ -116,11 +116,12 @@
   "Pushes changes into the stash. MODE defines changes to be pushed:
 * :all      - push all changes (worktree and index).
 * :worktree - push worktree changes only."
-  (if (string-empty-p message)
-      (yandex-arc/shell/run-arc-text "stash" "push")
-    (cond
-     ((eq mode :all)      (yandex-arc/shell/run-arc-text "stash" "push" "-m" message))
-     ((eq mode :worktree) (yandex-arc/shell/run-arc-text "stash" "push" "--keep-index" "-m" message)))))
+  (let ((args '("stash" "push")))
+    (if (eq mode :worktree)
+        (setq args (append args '("--keep-index"))))
+    (unless (string-empty-p message)
+      (setq args (append args (list "-m" message))))
+    (yandex-arc/shell/run-arc-text args)))
 
 
 (defun yandex-arc/shell/stash-apply (stash-num restore-index-state)
