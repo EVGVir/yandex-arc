@@ -7,6 +7,7 @@
 (require 'yandex-arc-properties)
 (require 'yandex-arc-revision)
 (require 'yandex-arc-shell)
+(require 'yandex-arc-util)
 
 (require 'eieio)
 (require 'magit-section)
@@ -147,8 +148,7 @@
 
 Returns the code returned by `arc`."
   (interactive
-   (let ((start-at    (read-from-minibuffer "Create branch starting at: "
-                                            (or (yandex-arc/properties/get-branch-name-at-point) "trunk")))
+   (let ((start-at (yandex-arc/util/read-branch-from-minibuffer "Create branch starting at: " "trunk"))
          (branch-name (read-from-minibuffer "Name for new branch: ")))
      (list start-at branch-name)))
 
@@ -163,9 +163,7 @@ Returns the code returned by `arc`."
 (defun yandex-arc/actions/checkout (branch-name-or-revision)
   "Checkouts BRANCH-NAME-OR-REVISION."
   (interactive
-   (list (read-from-minibuffer
-          "Checkout: "
-          (yandex-arc/properties/get-branch-name-at-point))))
+   (list (yandex-arc/util/read-branch-from-minibuffer "Checkout: ")))
 
   (let ((result (yandex-arc/shell/checkout branch-name-or-revision)))
     (when (/= (slot-value result 'return-code) 0)
@@ -177,8 +175,7 @@ Returns the code returned by `arc`."
 (defun yandex-arc/actions/create-and-checkout (start-at branch-name)
   "Creates and checkouts a new branch BRANCH-NAME."
   (interactive
-   (let ((start-at    (read-from-minibuffer "Create and checkout branch starting at: "
-                                            (or (yandex-arc/properties/get-branch-name-at-point) "trunk")))
+   (let ((start-at (yandex-arc/util/read-branch-from-minibuffer "Create and checkout branch starting at: " "trunk"))
          (branch-name (read-from-minibuffer "Name for new branch: ")))
      (list start-at branch-name)))
 
@@ -189,9 +186,7 @@ Returns the code returned by `arc`."
 (defun yandex-arc/actions/delete-branch (branch-name)
   "Deletes branch BRANCH-NAME."
   (interactive
-   (list (read-from-minibuffer
-          "Delete branch: "
-          (yandex-arc/properties/get-branch-name-at-point))))
+   (list (yandex-arc/util/read-branch-from-minibuffer "Delete branch: ")))
 
   (let ((result (yandex-arc/shell/delete-branch branch-name)))
     (if (/= (slot-value result 'return-code) 0)
@@ -204,7 +199,7 @@ Returns the code returned by `arc`."
 (defun yandex-arc/actions/rename-branch (from to)
   "Renames branch with name FROM to name TO."
   (interactive
-   (let* ((from (read-from-minibuffer "Rename branch: " (yandex-arc/properties/get-branch-name-at-point)))
+   (let* ((from (yandex-arc/util/read-branch-from-minibuffer "Rename branch: "))
           (to   (read-from-minibuffer (concat "Rename branch '" from "', to: "))))
      (list from to)))
 
