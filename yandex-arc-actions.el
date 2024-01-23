@@ -57,6 +57,9 @@
 
 ;; Stashing
 (transient-define-prefix yandex-arc/actions/stash-transient ()
+  ["Arguments"
+   ("-i" "restore index state (apply/pop)" "--index"
+    :init-value (lambda (obj) (setf (slot-value obj 'value) "--index")))]
   [["Stash"
     ("z" "both"     yandex-arc/actions/stash-push)
     ("i" "index"    yandex-arc/actions/not-implemented-message)
@@ -86,7 +89,9 @@
   (interactive)
   (let ((stash-index (magit-section-value-if 'yandex-arc/stash-section)))
     (if stash-index
-        (let ((result (yandex-arc/shell/stash-apply stash-index t)))
+        (let* ((args (transient-args 'yandex-arc/actions/stash-transient))
+               (restore-index-state (transient-arg-value "--index" args))
+               (result (yandex-arc/shell/stash-apply stash-index restore-index-state)))
           (if (= (slot-value result 'return-code) 0)
               (revert-buffer)
             (ding t)
@@ -100,7 +105,9 @@
   (interactive)
   (let ((stash-index (magit-section-value-if 'yandex-arc/stash-section)))
     (if stash-index
-        (let ((result (yandex-arc/shell/stash-pop stash-index t)))
+        (let* ((args (transient-args 'yandex-arc/actions/stash-transient))
+               (restore-index-state (transient-arg-value "--index" args))
+               (result (yandex-arc/shell/stash-pop stash-index restore-index-state)))
           (if (= (slot-value result 'return-code) 0)
               (revert-buffer)
             (ding t)
