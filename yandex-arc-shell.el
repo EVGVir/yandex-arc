@@ -163,6 +163,10 @@ If RESTORE-INDEX-STATE is t then index state is restored."
   (yandex-arc/shell/run-arc-text "branch" "--move" from to))
 
 
+(defun yandex-arc/shell/unfetch-branch (branch-name)
+  (yandex-arc/shell/run-arc-text "unfetch" branch-name))
+
+
 (defun yandex-arc/shell/checkout (branch-name-or-revision)
   (yandex-arc/shell/run-arc-text "checkout" branch-name-or-revision))
 

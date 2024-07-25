@@ -141,7 +141,8 @@
     ("l" "list all branches" yandex-arc/actions/show-all-branches)]
    ["Do"
     ("k" "delete"            yandex-arc/actions/delete-branch)
-    ("m" "rename"            yandex-arc/actions/rename-branch)]])
+    ("m" "rename"            yandex-arc/actions/rename-branch)
+    ("u" "unfetch"           yandex-arc/actions/unfetch-branch)]])
 
 
 (defun yandex-arc/actions/show-all-branches ()
@@ -215,6 +216,21 @@ Returns the code returned by `arc`."
         (ding t)
       (revert-buffer))
     (message "%s" (slot-value result 'value))))
+
+
+(defun yandex-arc/actions/unfetch-branch (branch-name)
+  "Unfetches a remote branch BRANCH-NAME."
+  (interactive
+   (list (yandex-arc/util/read-branch-from-minibuffer "Unfetch branch: ")))
+
+  (setq branch-name (substring branch-name 8)) ; Remove "arcadia/" prefix
+
+  (let ((result (yandex-arc/shell/unfetch-branch branch-name)))
+    (if (/= (slot-value result 'return-code) 0)
+        (ding t)
+      (message "%s" (slot-value result 'value))
+      (when (eq major-mode 'yandex-arc-branches-mode)
+        (revert-buffer)))))
 
 
 ;; Commit
