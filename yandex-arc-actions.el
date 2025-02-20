@@ -252,8 +252,11 @@ Returns the code returned by `arc`."
 
 (defun yandex-arc/actions/commit-filter (process string)
   (ignore process)
-  (when (string-match-p "nothing to commit!" string)
-    (message "nothing to commit!")))
+  (cond
+   ((string-match-p "nothing to commit!" string)
+    (message "Nothing to commit!"))
+   ((string-match-p "you are trying to amend commit from trunk" string)
+    (message "Commits from trunk must not be amended!"))))
 
 
 (defun yandex-arc/actions/commit ()
