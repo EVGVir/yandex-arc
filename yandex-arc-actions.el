@@ -199,9 +199,9 @@ Returns the code returned by `arc`."
   (let ((result (yandex-arc/shell/delete-branch branch-name)))
     (if (/= (slot-value result 'return-code) 0)
         (ding t)
-      (message "%s" (slot-value result 'value))
       (when (eq major-mode 'yandex-arc-branches-mode)
-        (revert-buffer)))))
+        (revert-buffer)))
+    (message "%s" (slot-value result 'value))))
 
 
 (defun yandex-arc/actions/rename-branch (from to)
@@ -228,9 +228,9 @@ Returns the code returned by `arc`."
   (let ((result (yandex-arc/shell/unfetch-branch branch-name)))
     (if (/= (slot-value result 'return-code) 0)
         (ding t)
-      (message "%s" (slot-value result 'value))
       (when (eq major-mode 'yandex-arc-branches-mode)
-        (revert-buffer)))))
+        (revert-buffer)))
+    (message "%s" (slot-value result 'value))))
 
 
 ;; Commit
