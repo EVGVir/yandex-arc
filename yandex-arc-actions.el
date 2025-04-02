@@ -255,8 +255,10 @@ Returns the code returned by `arc`."
   (cond
    ((string-match-p "nothing to commit!" string)
     (message "Nothing to commit!"))
-   ((string-match-p "you are trying to amend commit from trunk" string)
-    (message "Commits from trunk must not be amended!"))))
+   ((string-match-p "you are trying to amend commit from 'trunk" string)
+    (message "Amending commits in 'trunk' is forbidden!"))
+   ((string-match-p "Can not commit on branch 'trunk'" string)
+    (message "Commiting to 'trunk' is forbidden! Use '--force' if necessary."))))
 
 
 (defun yandex-arc/actions/commit ()
