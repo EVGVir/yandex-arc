@@ -20,6 +20,14 @@
   (message "¯\\_(ツ)_/¯   Not implemented yet"))
 
 
+(defun yandex-arc/actions/check-return-code-and-revert-buffer (result &optional always-show-value)
+  (let ((return-code (slot-value result 'return-code)))
+    (if (= return-code 0) (revert-buffer) (ding t))
+    (if (or (eq always-show-value :always-show-value) (/= return-code 0))
+        (message "%s" (slot-value result 'value)))
+    return-code))
+
+
 ;; Actions at point
 (defun yandex-arc/actions/visit-at-point ()
   (interactive)
@@ -90,12 +98,9 @@
   (let ((stash-index (magit-section-value-if 'yandex-arc/stash-section)))
     (if stash-index
         (let* ((args (transient-args 'yandex-arc/actions/stash-transient))
-               (restore-index-state (transient-arg-value "--index" args))
-               (result (yandex-arc/shell/stash-apply stash-index restore-index-state)))
-          (if (= (slot-value result 'return-code) 0)
-              (revert-buffer)
-            (ding t)
-            (message "%s" (slot-value result 'value))))
+               (restore-index-state (transient-arg-value "--index" args)))
+          (yandex-arc/actions/check-return-code-and-revert-buffer
+           (yandex-arc/shell/stash-apply stash-index restore-index-state)))
       (ding)
       (message "No stash selected."))))
 
@@ -106,12 +111,9 @@
   (let ((stash-index (magit-section-value-if 'yandex-arc/stash-section)))
     (if stash-index
         (let* ((args (transient-args 'yandex-arc/actions/stash-transient))
-               (restore-index-state (transient-arg-value "--index" args))
-               (result (yandex-arc/shell/stash-pop stash-index restore-index-state)))
-          (if (= (slot-value result 'return-code) 0)
-              (revert-buffer)
-            (ding t)
-            (message "%s" (slot-value result 'value))))
+               (restore-index-state (transient-arg-value "--index" args)))
+          (yandex-arc/actions/check-return-code-and-revert-buffer
+           (yandex-arc/shell/stash-pop stash-index restore-index-state)))
       (ding)
       (message "No stash selected."))))
 
@@ -160,12 +162,8 @@ Returns the code returned by `arc`."
          (branch-name (read-from-minibuffer "Name for new branch: ")))
      (list start-at branch-name)))
 
-  (let* ((result (yandex-arc/shell/branch-create start-at branch-name))
-         (return-code (slot-value result 'return-code)))
-    (when (/= return-code 0)
-      (ding t)
-      (message "%s" (slot-value result 'value)))
-    return-code))
+  (yandex-arc/actions/check-return-code-and-revert-buffer
+   (yandex-arc/shell/branch-create start-at branch-name)))
 
 
 (defun yandex-arc/actions/checkout (branch-name-or-revision)
@@ -173,11 +171,8 @@ Returns the code returned by `arc`."
   (interactive
    (list (yandex-arc/util/read-branch-from-minibuffer "Checkout: ")))
 
-  (let ((result (yandex-arc/shell/checkout branch-name-or-revision)))
-    (when (/= (slot-value result 'return-code) 0)
-      (ding t)
-      (message "%s" (slot-value result 'value))))
-  (revert-buffer))
+  (yandex-arc/actions/check-return-code-and-revert-buffer
+   (yandex-arc/shell/checkout branch-name-or-revision)))
 
 
 (defun yandex-arc/actions/create-and-checkout (start-at branch-name)
@@ -211,11 +206,9 @@ Returns the code returned by `arc`."
           (to   (read-from-minibuffer (concat "Rename branch '" from "', to: "))))
      (list from to)))
 
-  (let ((result (yandex-arc/shell/rename-branch from to)))
-    (if (/= (slot-value result 'return-code) 0)
-        (ding t)
-      (revert-buffer))
-    (message "%s" (slot-value result 'value))))
+  (yandex-arc/actions/check-return-code-and-revert-buffer
+   (yandex-arc/shell/rename-branch from to)
+   :always-show-value))
 
 
 (defun yandex-arc/actions/unfetch-branch (branch-name)
@@ -225,12 +218,8 @@ Returns the code returned by `arc`."
 
   (setq branch-name (substring branch-name 8)) ; Remove "arcadia/" prefix
 
-  (let ((result (yandex-arc/shell/unfetch-branch branch-name)))
-    (if (/= (slot-value result 'return-code) 0)
-        (ding t)
-      (when (eq major-mode 'yandex-arc-branches-mode)
-        (revert-buffer)))
-    (message "%s" (slot-value result 'value))))
+  (yandex-arc/actions/check-return-code-and-revert-buffer
+   (yandex-arc/shell/unfetch-branch branch-name)))
 
 
 ;; Commit
@@ -286,11 +275,9 @@ Returns the code returned by `arc`."
 (defun yandex-arc/actions/pull-request-checkout (id)
   "Checkouts pull request with the specified ID."
   (interactive "nCheckout pull request: ")
-  (let ((result (yandex-arc/shell/pull-request-checkout id)))
-    (message "%s" (slot-value result 'value))
-    (if (/= (slot-value result 'return-code) 0)
-        (ding t)
-      (revert-buffer))))
+  (yandex-arc/actions/check-return-code-and-revert-buffer
+   (yandex-arc/shell/pull-request-checkout id)
+   :always-show-value))
 
 
 (defun yandex-arc/actions/pull-request-create-filter (process string)
@@ -308,11 +295,8 @@ Returns the code returned by `arc`."
 ;; Pull
 (defun yandex-arc/actions/pull ()
   (interactive)
-  (let ((result (yandex-arc/shell/pull)))
-    (if (= (slot-value result 'return-code) 0)
-        (revert-buffer)
-      (ding t)
-      (message "%s" (slot-value result 'value)))))
+  (yandex-arc/actions/check-return-code-and-revert-buffer
+   (yandex-arc/shell/pull)))
 
 
 ;; Push
@@ -330,12 +314,10 @@ Returns the code returned by `arc`."
   (let* ((args (transient-args 'yandex-arc/actions/push-transient))
          (force     (transient-arg-value "--force"     args))
          (no-verify (transient-arg-value "--no-verify" args))
-         (publish   (transient-arg-value "--publish"   args))
-         (result (yandex-arc/shell/push force no-verify publish))
-         (return-code (slot-value result 'return-code))
-         (return-value (slot-value result 'value)))
-    (message "%s" return-value)
-    (when (/= return-code 0) (ding))))
+         (publish   (transient-arg-value "--publish"   args)))
+    (yandex-arc/actions/check-return-code-and-revert-buffer
+     (yandex-arc/shell/push force no-verify publish)
+     :always-show-value)))
 
 ;; Diff
 (transient-define-prefix yandex-arc/actions/diff-transient ()
