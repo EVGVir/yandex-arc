@@ -30,6 +30,7 @@
     ("F"        "Pull"                    yandex-arc/actions/pull)
     ("P"        "Push"                    yandex-arc/actions/push-transient)
     ("R"        "Pull request"            yandex-arc/actions/pull-request-transient)
+    ("X"        "Reset"                   yandex-arc/actions/reset-transient)
     ("y"        "Show all branches"       yandex-arc/actions/show-all-branches)
     ("z"        "Stash"                   yandex-arc/actions/stash-transient)]
    ["Applying changes"
@@ -58,6 +59,7 @@
   "R"        'yandex-arc/actions/pull-request-transient
   "s"        'yandex-arc/actions/stage-file
   "u"        'yandex-arc/actions/unstage-file
+  "X"        'yandex-arc/actions/reset-transient
   "y"        'yandex-arc/actions/show-all-branches
   "z"        'yandex-arc/actions/stash-transient)
 

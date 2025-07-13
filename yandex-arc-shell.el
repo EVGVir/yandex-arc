@@ -73,7 +73,7 @@
 
 
 (defun yandex-arc/shell/unstage (file-name)
-  (yandex-arc/shell/run-arc-text "reset" "HEAD" file-name))
+  (yandex-arc/shell/reset "HEAD" nil file-name))
 
 
 (defun yandex-arc/shell/diff-file (file-name diff-type &optional commit)
@@ -167,8 +167,8 @@ If RESTORE-INDEX-STATE is t then index state is restored."
   (yandex-arc/shell/run-arc-text "unfetch" branch-name))
 
 
-(defun yandex-arc/shell/checkout (branch-name-or-revision)
-  (yandex-arc/shell/run-arc-text "checkout" branch-name-or-revision))
+(defun yandex-arc/shell/checkout (branch-name-or-revision &optional path)
+  (yandex-arc/shell/run-arc-text "checkout" branch-name-or-revision path))
 
 
 (defun yandex-arc/shell/commit (process-filter on-process-status-change)
@@ -205,3 +205,14 @@ If RESTORE-INDEX-STATE is t then index state is restored."
 
 (defun yandex-arc/shell/discard-file (file)
   (yandex-arc/shell/run-arc-text "checkout" file))
+
+
+(defun yandex-arc/shell/reset (branch-name-or-revision mode path)
+  (let ((args (list "reset")))
+    (if branch-name-or-revision (setq args (append args (list branch-name-or-revision))))
+    (cond
+     ((eq mode :soft)  (setq args (append args '("--soft"))))
+     ((eq mode :hard)  (setq args (append args '("--hard"))))
+     ((eq mode :mixed) (setq args (append args '("--mixed")))))
+    (if path (setq args (append args (list path))))
+    (apply 'yandex-arc/shell/run-arc-text args)))

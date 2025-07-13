@@ -360,3 +360,43 @@ Returns the code returned by `arc`."
   (when (yes-or-no-p (concat "Trash file \"" file "\""))
     (delete-file file)
     (revert-buffer)))
+
+
+;; Reset
+(transient-define-prefix yandex-arc/actions/reset-transient ()
+  ["Reset"
+   ("f" "file"   yandex-arc/actions/reset-file)]
+  ["Reset this"
+   ("m" "mixed (HEAD and index)"            yandex-arc/actions/reset-mixed)
+   ("s" "soft  (HEAD only)"                 yandex-arc/actions/reset-soft)
+   ("h" "hard  (HEAD, index and work tree)" yandex-arc/actions/reset-hard)])
+
+
+(defun yandex-arc/actions/reset-file (branch-or-commit file-name)
+  (interactive
+   (list
+    (yandex-arc/util/read-branch-from-minibuffer "Checkout from revision: ")
+    (read-from-minibuffer "Checkout file: ")))
+  (yandex-arc/actions/check-return-code-and-revert-buffer
+   (yandex-arc/shell/checkout branch-or-commit file-name)))
+
+
+(defun yandex-arc/actions/reset-mixed (branch-or-commit)
+  (interactive
+   (list (yandex-arc/util/read-branch-from-minibuffer "Mixed reset to: ")))
+  (yandex-arc/actions/check-return-code-and-revert-buffer
+   (yandex-arc/shell/reset branch-or-commit :mixed nil)))
+
+
+(defun yandex-arc/actions/reset-soft (branch-or-commit)
+  (interactive
+   (list (yandex-arc/util/read-branch-from-minibuffer "Soft reset to: ")))
+  (yandex-arc/actions/check-return-code-and-revert-buffer
+   (yandex-arc/shell/reset branch-or-commit :soft nil)))
+
+
+(defun yandex-arc/actions/reset-hard (branch-or-commit)
+  (interactive
+   (list (yandex-arc/util/read-branch-from-minibuffer "Hard reset to: ")))
+  (yandex-arc/actions/check-return-code-and-revert-buffer
+   (yandex-arc/shell/reset branch-or-commit :hard nil)))
