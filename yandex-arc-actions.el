@@ -335,7 +335,11 @@ Returns the code returned by `arc`."
   (interactive)
   (magit-section-case
     ('yandex-arc/files-section
-     (yandex-arc/actions/not-implemented-message))
+     (cond
+      ((eq (magit-section-ident-value (magit-current-section)) :unstaged)
+       (yandex-arc/actions/discard-files (yandex-arc/get-file-names-from-section-at-point)))
+      (t
+       (yandex-arc/actions/not-implemented-message))))
     ('magit-file-section
      (cond
       ((eq (magit-section-parent-value (magit-current-section)) :untracked)
@@ -348,6 +352,16 @@ Returns the code returned by `arc`."
      (yandex-arc/actions/not-implemented-message))
     ('yandex-arc/stash-section
      (yandex-arc/actions/stash-drop))))
+
+
+(defun yandex-arc/actions/discard-files (file-names)
+  "Discards unstaged changes in FILE-NAMES."
+  (when file-names
+    (when (y-or-n-p (format "Discard unstaged changes in %d file(s)? "
+                            (length file-names)))
+      (dolist (file-name file-names)
+        (yandex-arc/shell/discard-file file-name))
+      (revert-buffer))))
 
 
 (defun yandex-arc/actions/discard-file (file)
