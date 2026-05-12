@@ -67,7 +67,8 @@
 (transient-define-prefix yandex-arc/actions/stash-transient ()
   ["Arguments"
    ("-i" "restore index state (apply/pop)" "--index"
-    :init-value (lambda (obj) (setf (slot-value obj 'value) "--index")))]
+    :init-value (lambda (obj) (setf (slot-value obj 'value) "--index")))
+   ("-u" "Also save untracked files (--include-untracked)" "--include-untracked")]
   [["Stash"
     ("z" "both"     yandex-arc/actions/stash-push)
     ("i" "index"    yandex-arc/actions/not-implemented-message)
@@ -81,15 +82,19 @@
 (defun yandex-arc/actions/stash-push (message)
   "Pushes all changes into the stash."
   (interactive "MStash message: ")
-  (message "%s" (slot-value (yandex-arc/shell/stash-push message :all) 'value))
-  (revert-buffer))
+  (let* ((args (transient-args 'yandex-arc/actions/stash-transient))
+         (include-untracked (transient-arg-value "--include-untracked" args)))
+    (message "%s" (slot-value (yandex-arc/shell/stash-push message :all include-untracked) 'value))
+    (revert-buffer)))
 
 
 (defun yandex-arc/actions/stash-push-worktree (message)
   "Pushes worktree changes into the stash."
   (interactive "MStash message: ")
-  (message "%s" (slot-value (yandex-arc/shell/stash-push message :worktree) 'value))
-  (revert-buffer))
+  (let* ((args (transient-args 'yandex-arc/actions/stash-transient))
+         (include-untracked (transient-arg-value "--include-untracked" args)))
+    (message "%s" (slot-value (yandex-arc/shell/stash-push message :worktree include-untracked) 'value))
+    (revert-buffer)))
 
 
 (defun yandex-arc/actions/stash-apply ()
