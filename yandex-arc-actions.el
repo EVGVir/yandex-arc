@@ -130,7 +130,7 @@
     (if stash-index
         (when (yes-or-no-p (concat "Drop stash@{" (number-to-string stash-index) "}?"))
           (progn
-            (yandex-arc/shell/stash-drop stash-index)
+            (message "%s" (slot-value (yandex-arc/shell/stash-drop stash-index) 'value))
             (revert-buffer)))
       (ding)
       (message "No stash selected."))))
