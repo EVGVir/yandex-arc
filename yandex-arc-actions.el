@@ -252,7 +252,9 @@ Returns the code returned by `arc`."
    ((string-match-p "you are trying to amend commit from 'trunk" string)
     (message "Amending commits in 'trunk' is forbidden!"))
    ((string-match-p "Can not commit on branch 'trunk'" string)
-    (message "Commiting to 'trunk' is forbidden! Use '--force' if necessary."))))
+    (message "Commiting to 'trunk' is forbidden! Use '--force' if necessary."))
+   (t
+    (message "Arc returned: %s" string))))
 
 
 (defun yandex-arc/actions/commit ()
