@@ -138,6 +138,8 @@
 
 ;; Branches
 (transient-define-prefix yandex-arc/actions/branch-transient ()
+  ["Arguments"
+   ("-f" "force delete" "--force")]
   [["Checkout"
     ("b" "branch/revision"   yandex-arc/actions/checkout)
     ("c" "new branch"        yandex-arc/actions/create-and-checkout)
@@ -196,7 +198,9 @@ Returns the code returned by `arc`."
   (interactive
    (list (yandex-arc/util/read-branch-from-minibuffer "Delete branch: ")))
 
-  (let ((result (yandex-arc/shell/delete-branch branch-name)))
+  (let* ((args (transient-args 'yandex-arc/actions/branch-transient))
+         (force (transient-arg-value "--force" args))
+         (result (yandex-arc/shell/delete-branch branch-name force)))
     (if (/= (slot-value result 'return-code) 0)
         (ding t)
       (when (eq major-mode 'yandex-arc-branches-mode)

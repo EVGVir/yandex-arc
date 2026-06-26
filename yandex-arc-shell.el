@@ -159,8 +159,11 @@ If RESTORE-INDEX-STATE is t then index state is restored."
   (yandex-arc/shell/run-arc-text "branch" branch-name start-at))
 
 
-(defun yandex-arc/shell/delete-branch (branch-name)
-  (yandex-arc/shell/run-arc-text "branch" "--delete" branch-name))
+(defun yandex-arc/shell/delete-branch (branch-name force)
+  (let ((args (list "branch" "--delete")))
+    (if force (setq args (append args '("--force"))))
+    (setq args (append args (list branch-name)))
+    (apply 'yandex-arc/shell/run-arc-text args)))
 
 
 (defun yandex-arc/shell/rename-branch (from to)
