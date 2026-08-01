@@ -2,21 +2,14 @@
 
 (provide 'yandex-arc-revision)
 
-(require 'yandex-arc-actions)
 (require 'yandex-arc-properties)
+(require 'yandex-arc-sections)
 (require 'yandex-arc-shell)
 (require 'yandex-arc-util)
-
-(require 'eieio)
-
-
-(defclass yandex-arc/revision/summary-section (magit-section) ())
-(defclass yandex-arc/revision/message-section (magit-section) ())
 
 
 (defvar-local yandex-arc/revision/commit nil
   "Commit the revision buffer shows information about.")
-
 
 (defvar-keymap yandex-arc-revision-mode-map
   :doc "Keymap for `yandex-arc-revision-mode'."
@@ -32,6 +25,7 @@
 
 
 (defun yandex-arc/revision/show-revision (commit)
+  (interactive "sShow revision: ")
   (let ((buffer (get-buffer-create (concat "arc-revision: " (file-name-nondirectory default-directory)))))
     (set-buffer buffer)
     (yandex-arc-revision-mode)
@@ -45,7 +39,7 @@
    (let ((inhibit-read-only t))
      (erase-buffer)
      (setq-local header-line-format yandex-arc/revision/commit)
-     (magit-insert-section (yandex-arc/root-section)
+     (magit-insert-section (yandex-arc/sections/root-section)
        (when (not (yandex-arc/revision/is-stash yandex-arc/revision/commit))
          (let ((description (yandex-arc/revision/get-commit-description yandex-arc/revision/commit)))
            (yandex-arc/revision/insert-summary-section description)
@@ -82,7 +76,7 @@
 
 
 (defun yandex-arc/revision/insert-summary-section (description)
-  (magit-insert-section (yandex-arc/revision/summary-section)
+  (magit-insert-section (yandex-arc/sections/revision-summary-section)
     (yandex-arc/revision/print-local-branches description)
     (let ((commit (gethash "commit" description))
           (author (gethash "author" description))
@@ -122,6 +116,6 @@
 
 
 (defun yandex-arc/revision/insert-message-section (description)
-  (magit-insert-section (yandex-arc/revision/message-section)
+  (magit-insert-section (yandex-arc/sections/revision-message-section)
     (insert (gethash "message" description) ?\n)
     (insert ?\n)))

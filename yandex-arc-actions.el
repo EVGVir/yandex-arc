@@ -2,10 +2,10 @@
 
 (provide 'yandex-arc-actions)
 
-(require 'yandex-arc)
 (require 'yandex-arc-branches)
 (require 'yandex-arc-properties)
 (require 'yandex-arc-revision)
+(require 'yandex-arc-sections)
 (require 'yandex-arc-shell)
 (require 'yandex-arc-util)
 
@@ -29,15 +29,16 @@
 
 
 ;; Actions at point
+;;;###autoload
 (defun yandex-arc/actions/visit-at-point ()
   (interactive)
   (let ((type (get-text-property (point) 'yandex-arc/properties/type-property)))
     (cond ((eq type 'file-name)
            (find-file (get-text-property (point) 'yandex-arc/properties/file-name-property)))
           ((eq type 'branch-name)
-           (yandex-arc/actions/show-commit (get-text-property (point) 'yandex-arc/properties/branch-name-property)))
+           (yandex-arc/revision/show-revision (get-text-property (point) 'yandex-arc/properties/branch-name-property)))
           ((eq type 'hash)
-           (yandex-arc/actions/show-commit (get-text-property (point) 'yandex-arc/properties/hash-property)))
+           (yandex-arc/revision/show-revision (get-text-property (point) 'yandex-arc/properties/hash-property)))
           ((eq type 'link)
            (browse-url (get-text-property (point) 'button-data))))))
 
@@ -46,7 +47,7 @@
 (defun yandex-arc/actions/stage-file ()
   "Stages file(s) at point."
   (interactive)
-  (let ((file-names (yandex-arc/get-file-names-from-section-at-point)))
+  (let ((file-names (yandex-arc/sections/get-file-names-at-point)))
     (dolist (file-name file-names)
       (yandex-arc/shell/stage file-name))
     (when (length file-names)
@@ -56,7 +57,7 @@
 (defun yandex-arc/actions/unstage-file ()
   "Unstages file(s) at point."
   (interactive)
-  (let ((file-names (yandex-arc/get-file-names-from-section-at-point)))
+  (let ((file-names (yandex-arc/sections/get-file-names-at-point)))
     (dolist (file-name file-names)
       (yandex-arc/shell/unstage file-name))
     (when (length file-names)
@@ -100,7 +101,7 @@
 (defun yandex-arc/actions/stash-apply ()
   "Applies stash at point."
   (interactive)
-  (let ((stash-index (magit-section-value-if 'yandex-arc/stash-section)))
+  (let ((stash-index (magit-section-value-if 'yandex-arc/sections/stash-section)))
     (if stash-index
         (let* ((args (transient-args 'yandex-arc/actions/stash-transient))
                (restore-index-state (transient-arg-value "--index" args)))
@@ -113,7 +114,7 @@
 (defun yandex-arc/actions/stash-pop ()
   "Pops stash at point."
   (interactive)
-  (let ((stash-index (magit-section-value-if 'yandex-arc/stash-section)))
+  (let ((stash-index (magit-section-value-if 'yandex-arc/sections/stash-section)))
     (if stash-index
         (let* ((args (transient-args 'yandex-arc/actions/stash-transient))
                (restore-index-state (transient-arg-value "--index" args)))
@@ -126,7 +127,7 @@
 (defun yandex-arc/actions/stash-drop ()
   "Drops stash at point."
   (interactive)
-  (let ((stash-index (magit-section-value-if 'yandex-arc/stash-section)))
+  (let ((stash-index (magit-section-value-if 'yandex-arc/sections/stash-section)))
     (if stash-index
         (when (yes-or-no-p (concat "Drop stash@{" (number-to-string stash-index) "}?"))
           (progn
@@ -333,22 +334,17 @@ Returns the code returned by `arc`."
 ;; Diff
 (transient-define-prefix yandex-arc/actions/diff-transient ()
   [["Actions"
-    ("c" "Show commit" yandex-arc/actions/show-commit)]])
-
-
-(defun yandex-arc/actions/show-commit (commit)
-  (interactive "sShow commit: ")
-  (yandex-arc/revision/show-revision commit))
+    ("c" "Show commit" yandex-arc/revision/show-revision)]])
 
 
 ;; Discard
 (defun yandex-arc/actions/discard-at-point ()
   (interactive)
   (magit-section-case
-    ('yandex-arc/files-section
+    ('yandex-arc/sections/files-section
      (cond
       ((eq (magit-section-ident-value (magit-current-section)) :unstaged)
-       (yandex-arc/actions/discard-files (yandex-arc/get-file-names-from-section-at-point)))
+       (yandex-arc/actions/discard-files (yandex-arc/sections/get-file-names-at-point)))
       (t
        (yandex-arc/actions/not-implemented-message))))
     ('magit-file-section
@@ -359,9 +355,9 @@ Returns the code returned by `arc`."
        (yandex-arc/actions/discard-file (magit-section-value-if 'magit-file-section)))
       (t
        (yandex-arc/actions/not-implemented-message))))
-    ('yandex-arc/stashes-section
+    ('yandex-arc/sections/stashes-section
      (yandex-arc/actions/not-implemented-message))
-    ('yandex-arc/stash-section
+    ('yandex-arc/sections/stash-section
      (yandex-arc/actions/stash-drop))))
 
 

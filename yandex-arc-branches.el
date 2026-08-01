@@ -2,16 +2,13 @@
 
 (provide 'yandex-arc-branches)
 
+(require 'yandex-arc)
 (require 'yandex-arc-properties)
+(require 'yandex-arc-sections)
 (require 'yandex-arc-shell)
 (require 'yandex-arc-util)
 
-(require 'eieio)
 (require 'magit-section)
-
-
-(defclass yandex-arc/branches-section (magit-section) ())
-(defclass yandex-arc/branch-section (magit-section) ())
 
 
 (define-derived-mode yandex-arc-branches-mode yandex-arc-mode "arc-branches"
@@ -37,7 +34,7 @@
   (yandex-arc/util/save-line-and-column
    (let ((inhibit-read-only t))
      (erase-buffer)
-     (magit-insert-section (yandex-arc/root-section)
+     (magit-insert-section (yandex-arc/sections/root-section)
        (yandex-arc/branches/insert-branches-section
         "Local branches" nil
         (seq-filter (lambda (branch-info) (gethash "local" branch-info)) branch-infos))
@@ -47,7 +44,7 @@
 
 
 (defun yandex-arc/branches/insert-branches-section (section-name hide-section branch-infos)
-  (magit-insert-section (yandex-arc/branches-section section-name hide-section)
+  (magit-insert-section (yandex-arc/sections/branches-section section-name hide-section)
     (magit-insert-heading
       (yandex-arc/properties/section-heading section-name)
       ":") ; Column at the end of the heading is replaced on subsections number.
@@ -59,7 +56,7 @@
 
 
 (defun yandex-arc/branches/insert-branch-section (name is-head)
-  (magit-insert-section (yandex-arc/branch-section name)
+  (magit-insert-section (yandex-arc/sections/branch-section name)
     (insert
      (if is-head
          (concat

@@ -6,6 +6,7 @@
 (require 'yandex-arc-branches)
 (require 'yandex-arc-properties)
 (require 'yandex-arc-revision)
+(require 'yandex-arc-sections)
 (require 'yandex-arc-shell)
 (require 'yandex-arc-util)
 
@@ -69,12 +70,6 @@
   (setq-local revert-buffer-function 'yandex-arc/revert-arc-buffer))
 
 
-(defclass yandex-arc/root-section    (magit-section) ())
-(defclass yandex-arc/files-section   (magit-section) ())
-(defclass yandex-arc/stashes-section (magit-section) ())
-(defclass yandex-arc/stash-section   (magit-section) ())
-
-
 (defun yandex-arc/mode-init ()
   "Initializes Yandex Arc Major Mode"
   (let* ((default-directory (concat (file-remote-p default-directory) (slot-value (yandex-arc/shell/root) 'value)))
@@ -97,7 +92,7 @@
   (yandex-arc/util/save-line-and-column
    (let ((inhibit-read-only t))
      (erase-buffer)
-     (magit-insert-section (yandex-arc/root-section)
+     (magit-insert-section (yandex-arc/sections/root-section)
        (yandex-arc/print-head-info info)
        (yandex-arc/insert-status-section status)
        (yandex-arc/insert-stashes-section stash-info)))))
@@ -141,7 +136,7 @@ COMMIT is used only with DIFF-TYPE equal to :commit."
                   ((eq files-type :unmerged)  "Unmerged changes")
                   ((eq files-type :staged)    "Staged changes")
                   ((eq files-type :changes)   "Changes"))))
-    (magit-insert-section (yandex-arc/files-section files-type)
+    (magit-insert-section (yandex-arc/sections/files-section files-type)
       (magit-insert-heading
         (yandex-arc/properties/section-heading heading)
         ":") ; Column at the end of the heading is replaced on subsections number.
@@ -181,15 +176,6 @@ LOCATION can be \"changed\", \"staged\" or \"untracked\"."
    (gethash location (gethash "status" status))))
 
 
-(defun yandex-arc/get-file-names-from-section-at-point ()
-  (let ((section (magit-current-section)))
-    (cond ((magit-section-match 'magit-file-section section)
-           (list (slot-value section 'value)))
-          ((magit-section-match 'yandex-arc/files-section section)
-           (seq-map (lambda (section) (slot-value section 'value))
-                    (slot-value section 'children))))))
-
-
 (defun yandex-arc/split-diff (diff)
   "Splits DIFF into hunks."
   (with-temp-buffer
@@ -207,7 +193,7 @@ LOCATION can be \"changed\", \"staged\" or \"untracked\"."
 (defun yandex-arc/insert-stashes-section (stash-info)
   (let ((stashes-num (length stash-info)))
     (when (> stashes-num 0)
-      (magit-insert-section (yandex-arc/stashes-section nil t)
+      (magit-insert-section (yandex-arc/sections/stashes-section nil t)
         (magit-insert-heading
           (yandex-arc/properties/section-heading "Stashes")
           ":") ; Column at the end of the heading is replaced on subsections number.
@@ -219,7 +205,7 @@ LOCATION can be \"changed\", \"staged\" or \"untracked\"."
 
 
 (defun yandex-arc/insert-stash-section (index description)
-  (magit-insert-section (yandex-arc/stash-section index)
+  (magit-insert-section (yandex-arc/sections/stash-section index)
     (magit-insert-heading
        (yandex-arc/properties/hash (format "stash@{%d}" index))
        " " description "\n")))
