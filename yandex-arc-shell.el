@@ -44,7 +44,7 @@
 
 (defun yandex-arc/shell/normalize-string (str)
   (replace-regexp-in-string
-   "" "\n"
+   "\r" "\n"
    (ansi-color-filter-apply (string-trim str))))
 
 
