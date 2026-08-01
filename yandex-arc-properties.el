@@ -48,5 +48,5 @@
 
 (defun yandex-arc/properties/link (name href-format &rest args)
   (let ((href (apply 'format (append (list href-format) args))))
-    (propertize (button-buttonize name 'browse-url href)
+    (propertize (buttonize name 'browse-url href)
                 'yandex-arc/properties/type-property 'link)))

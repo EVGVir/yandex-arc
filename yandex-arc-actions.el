@@ -50,7 +50,7 @@
   (let ((file-names (yandex-arc/sections/get-file-names-at-point)))
     (dolist (file-name file-names)
       (yandex-arc/shell/stage file-name))
-    (when (length file-names)
+    (when file-names
       (revert-buffer))))
 
 
@@ -60,7 +60,7 @@
   (let ((file-names (yandex-arc/sections/get-file-names-at-point)))
     (dolist (file-name file-names)
       (yandex-arc/shell/unstage file-name))
-    (when (length file-names)
+    (when file-names
       (revert-buffer))))
 
 
