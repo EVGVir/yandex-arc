@@ -40,7 +40,25 @@
           ((eq type 'hash)
            (yandex-arc/revision/show-revision (get-text-property (point) 'yandex-arc/properties/hash-property)))
           ((eq type 'link)
-           (browse-url (get-text-property (point) 'button-data))))))
+           (browse-url (get-text-property (point) 'button-data)))
+          ((yandex-arc/sections/hunk-at-point-p)
+           (yandex-arc/actions/open-hunk)))))
+
+
+(defun yandex-arc/actions/open-hunk ()
+  (let ((hunk-section (magit-current-section)))
+    (when (and (> (point) (slot-value hunk-section 'content))                 ; cursor is in hunk body, not heading
+               (not (save-excursion (beginning-of-line) (looking-at-p "-")))) ; skip removed lines
+        (let* ((file-section (slot-value hunk-section 'parent))
+               (file-name (slot-value file-section 'value))
+               (line-in-file (yandex-arc/sections/line-in-file hunk-section (point)))
+               (column (1- (current-column))))
+          (when (and (file-exists-p file-name) line-in-file)
+            (find-file file-name)
+            (goto-char (point-min))
+            (forward-line (1- line-in-file))
+            (forward-char (max 0 column))
+            (recenter))))))
 
 
 ;; Staging
