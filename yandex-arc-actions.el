@@ -396,9 +396,11 @@ Returns the code returned by `arc`."
 
 
 (defun yandex-arc/actions/delete-file (file)
-  (when (yes-or-no-p (concat "Trash file \"" file "\""))
-    (delete-file file)
-    (revert-buffer)))
+  (let* ((dir (and (file-directory-p file) (not (file-symlink-p file))))
+         (msg (if dir "Delete directory \"%s\" recursively? " "Delete file \"%s\"? ")))
+    (when (yes-or-no-p (format msg file))
+      (if dir (delete-directory file t) (delete-file file))
+      (revert-buffer))))
 
 
 ;; Reset
