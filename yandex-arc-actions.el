@@ -255,7 +255,8 @@ Returns the code returned by `arc`."
   [["Create"
     ("c" "Commit" yandex-arc/actions/commit)]
    ["Edit HEAD"
-    ("a" "Amend" yandex-arc/actions/amend)]])
+    ("a" "Amend" yandex-arc/actions/amend)
+    ("e" "Extend" yandex-arc/actions/extend)]])
 
 
 (defun yandex-arc/actions/revert-buffer-on-process-exit (process event)
@@ -290,6 +291,14 @@ Returns the code returned by `arc`."
 (defun yandex-arc/actions/amend ()
   (interactive)
   (yandex-arc/shell/amend
+   'yandex-arc/actions/commit-filter
+   'yandex-arc/actions/revert-buffer-on-process-exit))
+
+
+(defun yandex-arc/actions/extend ()
+  "Amend HEAD without editing its commit message."
+  (interactive)
+  (yandex-arc/shell/extend
    'yandex-arc/actions/commit-filter
    'yandex-arc/actions/revert-buffer-on-process-exit))
 
