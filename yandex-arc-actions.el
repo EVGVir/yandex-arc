@@ -370,6 +370,8 @@ Returns the code returned by `arc`."
   (magit-section-case
     ('yandex-arc/sections/files-section
      (cond
+      ((eq (magit-section-ident-value (magit-current-section)) :untracked)
+       (yandex-arc/actions/delete-files (yandex-arc/sections/get-file-names-at-point)))
       ((eq (magit-section-ident-value (magit-current-section)) :unstaged)
        (yandex-arc/actions/discard-files (yandex-arc/sections/get-file-names-at-point)))
       (t
@@ -401,6 +403,16 @@ Returns the code returned by `arc`."
 (defun yandex-arc/actions/discard-file (file)
   (when (yes-or-no-p (concat "Discard unstaged changes in " file))
     (yandex-arc/shell/discard-file file)
+    (revert-buffer)))
+
+
+(defun yandex-arc/actions/delete-files (file-names)
+  "Delete untracked FILE-NAMES."
+  (when (and file-names (yes-or-no-p (format "Delete %d untracked path(s)? " (length file-names))))
+    (dolist (file file-names)
+      (if (and (not (file-symlink-p file)) (file-directory-p file))
+          (delete-directory file t)
+        (delete-file file)))
     (revert-buffer)))
 
 
