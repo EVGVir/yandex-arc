@@ -40,7 +40,9 @@
         (seq-filter (lambda (branch-info) (gethash "local" branch-info)) branch-infos))
        (yandex-arc/branches/insert-branches-section
         "Remote branches" t
-        (seq-filter (lambda (branch-info) (not (gethash "local" branch-info))) branch-infos))))))
+        (seq-filter (lambda (branch-info) (not (gethash "local" branch-info))) branch-infos)))
+     (let ((magit-section-cache-visibility nil))
+       (magit-section-show magit-root-section)))))
 
 
 (defun yandex-arc/branches/insert-branches-section (section-name hide-section branch-infos)
