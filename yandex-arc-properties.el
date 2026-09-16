@@ -46,6 +46,12 @@
               'yandex-arc/properties/hash-property hash))
 
 
+(defun yandex-arc/properties/head (text)
+  (propertize text
+              'yandex-arc/properties/type-property 'hash
+              'yandex-arc/properties/hash-property "HEAD"))
+
+
 (defun yandex-arc/properties/link (name href-format &rest args)
   (let ((href (apply 'format (append (list href-format) args))))
     (propertize (buttonize name 'browse-url href)

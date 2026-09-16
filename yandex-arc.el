@@ -102,8 +102,10 @@
   "Adds information about HEAD to the buffer."
   (let ((branch  (gethash "branch"  info))
         (summary (gethash "summary" info)))
-    (insert "Head:     " (yandex-arc/properties/branch-name branch) " ")
-    (insert summary "\n\n")))
+    (insert
+     (yandex-arc/properties/head
+      (concat "Head:     " (yandex-arc/properties/branch-name branch) " " summary "\n"))
+     "\n")))
 
 
 (defun yandex-arc/insert-status-section (status)
