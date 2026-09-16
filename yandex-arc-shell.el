@@ -186,6 +186,10 @@ If RESTORE-INDEX-STATE is t then index state is restored."
   (yandex-arc/shell/run-arc-with-editor process-filter on-process-status-change "commit" "--amend"))
 
 
+(defun yandex-arc/shell/extend ()
+  (yandex-arc/shell/run-arc-text "commit" "--amend" "--no-edit"))
+
+
 (defun yandex-arc/shell/pull-request-checkout (id)
   (yandex-arc/shell/run-arc-text "pr" "checkout" (number-to-string id)))
 
