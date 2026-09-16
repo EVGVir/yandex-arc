@@ -153,8 +153,10 @@ COMMIT is used only with DIFF-TYPE equal to :commit."
           (magit-insert-heading
             (yandex-arc/properties/diff-file-heading file-name))
           (magit-insert-section-body
-            (yandex-arc/insert-diff-hunk-sections
-             (yandex-arc/split-diff (slot-value (yandex-arc/shell/diff-file file-name diff-type commit) 'value)))
+            (let ((diff (slot-value (yandex-arc/shell/diff-file file-name diff-type commit) 'value)))
+              (if-let* ((hunks (yandex-arc/split-diff diff)))
+                  (yandex-arc/insert-diff-hunk-sections hunks)
+                (insert diff)))
             (insert ?\n)))
       (insert (yandex-arc/properties/file-name file-name) ?\n))))
 
@@ -177,17 +179,17 @@ LOCATION can be \"changed\", \"staged\" or \"untracked\"."
 
 
 (defun yandex-arc/split-diff (diff)
-  "Splits DIFF into hunks."
+  "Split DIFF into hunks, or return nil if it has no hunk headers."
   (with-temp-buffer
     (insert diff)
-    (goto-char 0)
-    (re-search-forward "^@@")
-    (let (result
-          (begin (line-beginning-position)))
-      (while (re-search-forward "^@@" nil t)
-        (setq result (append result (list (buffer-substring begin (line-beginning-position)))))
-        (setq begin (line-beginning-position)))
-      (setq result (append result (list (buffer-substring begin (buffer-end 1))))))))
+    (goto-char (point-min))
+    (when (re-search-forward "^@@" nil t)
+      (let (result
+            (begin (line-beginning-position)))
+        (while (re-search-forward "^@@" nil t)
+          (setq result (append result (list (buffer-substring begin (line-beginning-position)))))
+          (setq begin (line-beginning-position)))
+        (setq result (append result (list (buffer-substring begin (point-max)))))))))
 
 
 (defun yandex-arc/insert-stashes-section (stash-info)
