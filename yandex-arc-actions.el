@@ -298,9 +298,9 @@ Returns the code returned by `arc`."
 (defun yandex-arc/actions/extend ()
   "Amend HEAD without editing its commit message."
   (interactive)
-  (yandex-arc/shell/extend
-   'yandex-arc/actions/commit-filter
-   'yandex-arc/actions/revert-buffer-on-process-exit))
+  (yandex-arc/actions/check-return-code-and-revert-buffer
+   (yandex-arc/shell/extend)
+   :always-show-value))
 
 
 ;; Pull request
