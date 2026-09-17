@@ -415,7 +415,10 @@ Returns the code returned by `arc`."
 
 (defun yandex-arc/actions/delete-files (file-names)
   "Delete untracked FILE-NAMES."
-  (when (and file-names (yes-or-no-p (format "Delete %d untracked path(s)? " (length file-names))))
+  (when (and file-names
+             (yes-or-no-p
+              (format "Delete %d untracked path(s), including directories and all their contents recursively? "
+                      (length file-names))))
     (dolist (file file-names)
       (yandex-arc/actions/delete-path file))
     (revert-buffer)))
