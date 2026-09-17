@@ -406,13 +406,18 @@ Returns the code returned by `arc`."
     (revert-buffer)))
 
 
+(defun yandex-arc/actions/delete-path (path)
+  "Delete PATH, recursively if it is a directory, without following symlinks."
+  (if (and (not (file-symlink-p path)) (file-directory-p path))
+      (delete-directory path t)
+    (delete-file path)))
+
+
 (defun yandex-arc/actions/delete-files (file-names)
   "Delete untracked FILE-NAMES."
   (when (and file-names (yes-or-no-p (format "Delete %d untracked path(s)? " (length file-names))))
     (dolist (file file-names)
-      (if (and (not (file-symlink-p file)) (file-directory-p file))
-          (delete-directory file t)
-        (delete-file file)))
+      (yandex-arc/actions/delete-path file))
     (revert-buffer)))
 
 
@@ -420,7 +425,7 @@ Returns the code returned by `arc`."
   (let* ((dir (and (file-directory-p file) (not (file-symlink-p file))))
          (msg (if dir "Delete directory \"%s\" recursively? " "Delete file \"%s\"? ")))
     (when (yes-or-no-p (format msg file))
-      (if dir (delete-directory file t) (delete-file file))
+      (yandex-arc/actions/delete-path file)
       (revert-buffer))))
 
 
