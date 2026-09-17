@@ -8,6 +8,10 @@
 (require 'yandex-arc-util)
 
 
+(declare-function yandex-arc/insert-files-section "yandex-arc"
+                  (files-type file-names diff-type &optional commit))
+
+
 (defvar-local yandex-arc/revision/commit nil
   "Commit the revision buffer shows information about.")
 
