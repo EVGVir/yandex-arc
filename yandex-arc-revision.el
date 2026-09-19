@@ -52,7 +52,9 @@
         :changes
         (yandex-arc/revision/diff-commits-file-names-only yandex-arc/revision/commit)
         :commit
-        yandex-arc/revision/commit)))))
+        yandex-arc/revision/commit))
+     (let ((magit-section-cache-visibility nil))
+       (magit-section-show magit-root-section)))))
 
 
 (defun yandex-arc/revision/is-stash (commit)
