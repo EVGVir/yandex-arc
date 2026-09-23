@@ -3,6 +3,12 @@
 (provide 'yandex-arc-properties)
 
 
+(defun yandex-arc/properties/branch-line (text branch-name)
+  (propertize text
+              'yandex-arc/properties/type-property 'branch-name
+              'yandex-arc/properties/branch-name-property branch-name))
+
+
 (defun yandex-arc/properties/branch-name (branch-name)
   (propertize branch-name
               'font-lock-face 'magit-branch-local
