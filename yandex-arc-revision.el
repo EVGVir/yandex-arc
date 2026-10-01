@@ -75,7 +75,7 @@
            (user-error "%s" (slot-value result 'value)))
           (t ; No errors
            (seq-map
-            (lambda (file-name) (yandex-arc/shell/normalize-string file-name))
+            (lambda (file-name) (yandex-arc/util/normalize-string file-name))
             (split-string (slot-value result 'value)))))))
 
 

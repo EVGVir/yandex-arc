@@ -2,6 +2,8 @@
 
 (provide 'yandex-arc-shell)
 
+(require 'yandex-arc-util)
+
 (require 'eieio)
 (require 'with-editor)
 
@@ -42,18 +44,12 @@
      :file-handler t)))
 
 
-(defun yandex-arc/shell/normalize-string (str)
-  (replace-regexp-in-string
-   "\r" "\n"
-   (ansi-color-filter-apply (string-trim str))))
-
-
 (defun yandex-arc/shell/run-arc-text (&rest args)
   (with-temp-buffer
     (let ((return-code (yandex-arc/shell/run-arc args)))
       (yandex-arc/arc-result
        :return-code return-code
-       :value (yandex-arc/shell/normalize-string (buffer-string))))))
+       :value (yandex-arc/util/normalize-string (buffer-string))))))
 
 
 (defun yandex-arc/shell/root ()

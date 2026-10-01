@@ -321,7 +321,7 @@ Returns the code returned by `arc`."
 
 (defun yandex-arc/actions/pull-request-create-filter (process string)
   (ignore process)
-  (message (yandex-arc/shell/normalize-string string)))
+  (message (yandex-arc/util/normalize-string string)))
 
 
 (defun yandex-arc/actions/pull-request-create ()

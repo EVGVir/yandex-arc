@@ -4,6 +4,9 @@
 
 (require 'yandex-arc-properties)
 
+(require 'ansi-color)
+(require 'subr-x)
+
 
 (defmacro yandex-arc/util/save-line-and-column (body)
   (let ((line   (gensym "line"))
@@ -26,3 +29,10 @@ is no branch under the point DEFAULT-BRANCH is used."
    (or
     (yandex-arc/properties/get-branch-name-at-point)
     default-branch)))
+
+
+(defun yandex-arc/util/normalize-string (str)
+  "Trim STR, remove ANSI sequences and replace CR characters with LF."
+  (replace-regexp-in-string
+   "\r" "\n"
+   (ansi-color-filter-apply (string-trim str))))
