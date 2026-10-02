@@ -67,7 +67,11 @@
   (interactive)
   (let ((file-names (yandex-arc/sections/get-file-names-at-point)))
     (dolist (file-name file-names)
-      (yandex-arc/shell/stage file-name))
+      (let ((result (yandex-arc/shell/stage file-name)))
+        (unless (zerop (slot-value result 'return-code))
+          ;; Earlier files may already have been staged.
+          (revert-buffer)
+          (user-error "Unable to stage %s: %s" file-name (slot-value result 'value)))))
     (when file-names
       (revert-buffer))))
 
@@ -77,7 +81,11 @@
   (interactive)
   (let ((file-names (yandex-arc/sections/get-file-names-at-point)))
     (dolist (file-name file-names)
-      (yandex-arc/shell/unstage file-name))
+      (let ((result (yandex-arc/shell/unstage file-name)))
+        (unless (zerop (slot-value result 'return-code))
+          ;; Earlier files may already have been unstaged.
+          (revert-buffer)
+          (user-error "Unable to unstage %s: %s" file-name (slot-value result 'value)))))
     (when file-names
       (revert-buffer))))
 
