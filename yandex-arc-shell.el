@@ -91,12 +91,12 @@ Do not normalize whitespace, line endings or ANSI sequences."
 
 (defun yandex-arc/shell/diff-unstaged (file-name)
   "Returns diff between working tree and index."
-  (yandex-arc/shell/run-arc-text "diff" "--color" "never" file-name))
+  (yandex-arc/shell/run-arc "diff" "--color" "never" file-name))
 
 
 (defun yandex-arc/shell/diff-staged (file-name)
   "Returns diff index and HEAD."
-  (yandex-arc/shell/run-arc-text "diff" "--color" "never" "--cached" file-name))
+  (yandex-arc/shell/run-arc "diff" "--color" "never" "--cached" file-name))
 
 
 (defun yandex-arc/shell/diff-commits-file-names-only (from to)
@@ -106,7 +106,7 @@ Do not normalize whitespace, line endings or ANSI sequences."
 
 (defun yandex-arc/shell/diff-commits (from to file-name)
   "Returns list of files diff FROM..TO."
-  (yandex-arc/shell/run-arc-text "diff" "--no-color" from to file-name))
+  (yandex-arc/shell/run-arc "diff" "--no-color" from to file-name))
 
 
 (defun yandex-arc/shell/stash-list ()

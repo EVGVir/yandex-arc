@@ -77,3 +77,31 @@ excluding PROGRAM, INFILE, DESTINATION and DISPLAY."
         (should (zerop (slot-value result 'return-code)))
         (should (equal (slot-value result 'value) "Hello\nnext line"))
         (should (equal command-args '("test-command" "test-arg")))))))
+
+
+;; diff
+(ert-deftest yandex-arc/shell-test/should-return-unstaged-diff-output-unchanged ()
+  (let ((text " a\r\nb \t\n"))
+    (yandex-arc/shell-test/with-process-output (text 0 command-args)
+      (let ((result (yandex-arc/shell/diff-unstaged "test-file")))
+        (should (zerop (slot-value result 'return-code)))
+        (should (equal (slot-value result 'value) text))
+        (should (equal command-args '("diff" "--color" "never" "test-file")))))))
+
+
+(ert-deftest yandex-arc/shell-test/should-return-staged-diff-output-unchanged ()
+  (let ((text " a\r\nb \t\n"))
+    (yandex-arc/shell-test/with-process-output (text 0 command-args)
+      (let ((result (yandex-arc/shell/diff-staged "test-file")))
+        (should (zerop (slot-value result 'return-code)))
+        (should (equal (slot-value result 'value) text))
+        (should (equal command-args '("diff" "--color" "never" "--cached" "test-file")))))))
+
+
+(ert-deftest yandex-arc/shell-test/should-return-commit-diff-output-unchanged ()
+  (let ((text " a\r\nb \t\n"))
+    (yandex-arc/shell-test/with-process-output (text 0 command-args)
+      (let ((result (yandex-arc/shell/diff-commits "commit-before" "commit-after" "test-file")))
+        (should (zerop (slot-value result 'return-code)))
+        (should (equal (slot-value result 'value) text))
+        (should (equal command-args '("diff" "--no-color" "commit-before" "commit-after" "test-file")))))))
