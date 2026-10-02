@@ -4,11 +4,12 @@
 
 (require 'yandex-arc-util)
 
-(require 'eieio)
 (require 'with-editor)
 
+(require 'eieio)
 
-(defvar-local yandex-arc/shell/arc-bin "arc"
+
+(defvar yandex-arc/shell/arc-bin "arc"
   "Yandex Arc binary.")
 
 
@@ -19,18 +20,24 @@
 
 
 (defun yandex-arc/shell/run-arc (&rest args)
-  (setq args (flatten-list args))
-  (apply 'process-file (append (list yandex-arc/shell/arc-bin nil t nil) args)))
+  "Return command output as UTF-8 text, with its exit status.
+Do not normalize whitespace, line endings or ANSI sequences."
+  (with-temp-buffer
+    ;; TRAMP may insert decoded Unicode directly into this buffer.
+    ;; Keep it multibyte so those characters remain intact.
+    (set-buffer-multibyte t)
+    (let* ((coding-system-for-read 'utf-8-unix)
+           (return-code (apply #'process-file yandex-arc/shell/arc-bin nil t nil (flatten-list args))))
+      (yandex-arc/arc-result
+       :return-code return-code
+       :value (buffer-string)))))
 
 
 (defun yandex-arc/shell/run-arc-json (&rest args)
-  (with-temp-buffer
-    (setq args (append args '("--json")))
-    (let ((return-code (yandex-arc/shell/run-arc args)))
-      (goto-char 0)
-      (yandex-arc/arc-result
-       :return-code return-code
-       :value (json-parse-buffer)))))
+  (let ((result (yandex-arc/shell/run-arc (append args '("--json")))))
+    (when (zerop (slot-value result 'return-code))
+      (oset result value (json-parse-string (slot-value result 'value))))
+    result))
 
 
 (defun yandex-arc/shell/run-arc-with-editor (process-filter on-process-status-change &rest args)
@@ -45,11 +52,10 @@
 
 
 (defun yandex-arc/shell/run-arc-text (&rest args)
-  (with-temp-buffer
-    (let ((return-code (yandex-arc/shell/run-arc args)))
-      (yandex-arc/arc-result
-       :return-code return-code
-       :value (yandex-arc/util/normalize-string (buffer-string))))))
+  (let ((result (yandex-arc/shell/run-arc args)))
+    (oset result value
+          (yandex-arc/util/normalize-string (slot-value result 'value)))
+    result))
 
 
 (defun yandex-arc/shell/root ()
