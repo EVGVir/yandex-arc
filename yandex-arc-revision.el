@@ -52,7 +52,8 @@
         :changes
         (yandex-arc/revision/diff-commits-file-names-only yandex-arc/revision/commit)
         :commit
-        yandex-arc/revision/commit)))))
+        yandex-arc/revision/commit))))
+  (yandex-arc/sections/paint-visible-sections))
 
 
 (defun yandex-arc/revision/is-stash (commit)

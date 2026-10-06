@@ -95,7 +95,8 @@
      (magit-insert-section (yandex-arc/sections/root-section)
        (yandex-arc/print-head-info info)
        (yandex-arc/insert-status-section status)
-       (yandex-arc/insert-stashes-section stash-info)))))
+       (yandex-arc/insert-stashes-section stash-info))))
+  (yandex-arc/sections/paint-visible-sections))
 
 
 (defun yandex-arc/print-head-info (info)

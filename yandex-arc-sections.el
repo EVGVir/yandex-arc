@@ -16,6 +16,18 @@
 (defclass yandex-arc/sections/stashes-section           (magit-section) ())
 
 
+(defun yandex-arc/sections/paint-visible-sections ()
+  "Paint the already inserted visible sections."
+  ;; Force recompute focus for the new section objects created by redraw.
+  (setq magit-section-focused-sections nil)
+  (let ((focused-sections (magit-focused-sections)))
+    (magit-map-sections
+     (lambda (section)
+       (when (and (slot-boundp section 'painted)
+                  (not (magit-section-hidden section)))
+         (magit-section-update-paint section focused-sections))))))
+
+
 (defun yandex-arc/sections/get-file-names-at-point ()
   (let ((section (magit-current-section)))
     (cond ((magit-section-match 'magit-file-section section)
