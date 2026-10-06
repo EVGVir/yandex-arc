@@ -44,11 +44,12 @@
            (unless (looking-at-p "-")
              (setq offset (1+ offset)))
            (forward-line 1))
-        ;; Parse hunk header `@@ -X,Y +Z,W @@` to get Z (start line
+        ;; Parse hunk header `@@ -X[,Y] +Z[,W] @@` to get Z (start line
         ;; in file after changes) and add the offset to it.
+        ;; A range count of one can be omitted.
         (let ((header (string-trim
                        (buffer-substring-no-properties
                         (slot-value hunk-section 'start)
                         content-start))))
-          (when (string-match "^@@ -[0-9]+,[0-9]+ \\+\\([0-9]+\\)" header)
+          (when (string-match "^@@ -[0-9]+\\(?:,[0-9]+\\)? \\+\\([0-9]+\\)" header)
             (+ (string-to-number (match-string 1 header)) offset)))))))
