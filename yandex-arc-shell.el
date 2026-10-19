@@ -83,10 +83,12 @@ Do not normalize whitespace, line endings or ANSI sequences."
 * :staged   - diff between HEAD and index.
 * :unstaged - diff between working tree and index.
 * :commit   - diff between COMMIT^..COMMIT."
-  (cond
-   ((eq diff-type :staged)   (yandex-arc/shell/diff-staged   file-name))
-   ((eq diff-type :unstaged) (yandex-arc/shell/diff-unstaged file-name))
-   ((eq diff-type :commit)   (yandex-arc/shell/diff-commits  (concat commit "^") commit file-name))))
+  ;; A relative path must not be interpreted as an Arc branch name.
+  (let ((path (concat "./" file-name)))
+    (cond
+     ((eq diff-type :staged)   (yandex-arc/shell/diff-staged   path))
+     ((eq diff-type :unstaged) (yandex-arc/shell/diff-unstaged path))
+     ((eq diff-type :commit)   (yandex-arc/shell/diff-commits  (concat commit "^") commit path)))))
 
 
 (defun yandex-arc/shell/diff-unstaged (file-name)

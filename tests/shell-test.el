@@ -80,6 +80,12 @@ excluding PROGRAM, INFILE, DESTINATION and DISPLAY."
 
 
 ;; diff
+(ert-deftest yandex-arc/shell-test/should-disambiguate-file-path-from-branch-name ()
+  (yandex-arc/shell-test/with-process-output ("test output" 0 command-args)
+    (yandex-arc/shell/diff-file "test-branch-name" :unstaged)
+    (should (equal command-args '("diff" "--color" "never" "./test-branch-name")))))
+
+
 (ert-deftest yandex-arc/shell-test/should-return-unstaged-diff-output-unchanged ()
   (let ((text " a\r\nb \t\n"))
     (yandex-arc/shell-test/with-process-output (text 0 command-args)
