@@ -1,0 +1,97 @@
+;; -*- lexical-binding: t; -*-
+
+(require 'yandex-arc)
+
+(require 'cl-lib)
+(require 'ert)
+
+
+(ert-deftest yandex-arc/refresh-test/should-pass-visible-section-and-focus-to-magit ()
+  (let* ((section (magit-hunk-section))
+         (focused-sections (list section))
+         calls)
+    (cl-letf (((symbol-function 'magit-map-sections)
+               (lambda (visit) (funcall visit section)))
+              ((symbol-function 'magit-focused-sections)
+               (lambda () focused-sections))
+              ((symbol-function 'magit-section-hidden) #'ignore)
+              ((symbol-function 'magit-section-update-paint)
+               (lambda (&rest args) (push args calls))))
+      (yandex-arc/sections/paint-visible-sections))
+    (should (equal calls (list (list section focused-sections))))))
+
+
+(ert-deftest yandex-arc/refresh-test/should-not-paint-hidden-sections ()
+  (let ((section (magit-hunk-section)))
+    (cl-letf (((symbol-function 'magit-map-sections)
+               (lambda (visit) (funcall visit section)))
+              ((symbol-function 'magit-focused-sections) #'ignore)
+              ((symbol-function 'magit-section-hidden) #'always)
+              ((symbol-function 'magit-section-update-paint)
+               (lambda (&rest _) (ert-fail "Hidden section passed for painting"))))
+      (yandex-arc/sections/paint-visible-sections))))
+
+
+(ert-deftest yandex-arc/refresh-test/should-not-load-deferred-sections-for-painting ()
+  (let ((section (magit-file-section
+                  :washer (lambda () (ert-fail "Deferred content was loaded")))))
+    (cl-letf (((symbol-function 'magit-map-sections)
+               (lambda (visit) (funcall visit section)))
+              ((symbol-function 'magit-focused-sections) #'ignore)
+              ((symbol-function 'magit-section-hidden) #'ignore)
+              ((symbol-function 'magit-section-show)
+               (lambda (&rest _) (ert-fail "Painting requested section expansion")))
+              ((symbol-function 'magit-section-update-paint)
+               (lambda (&rest _) (ert-fail "Deferred section passed for painting"))))
+      (yandex-arc/sections/paint-visible-sections))))
+
+
+(ert-deftest yandex-arc/refresh-test/should-clear-old-focus-before-recomputing-it ()
+  (let ((magit-section-focused-sections (list (magit-hunk-section)))
+        (observed-cache 'not-read))
+    (cl-letf (((symbol-function 'magit-map-sections) #'ignore)
+              ((symbol-function 'magit-focused-sections)
+               (lambda () (setq observed-cache magit-section-focused-sections) nil)))
+      (yandex-arc/sections/paint-visible-sections))
+    (should-not observed-cache)))
+
+
+(ert-deftest yandex-arc/refresh-test/should-paint-status-sections-after-insertion ()
+  (let (head-inserted status-inserted stashes-inserted painted)
+    (cl-letf (((symbol-function 'yandex-arc/print-head-info)
+               (lambda (_) (setq head-inserted t)))
+              ((symbol-function 'yandex-arc/insert-status-section)
+               (lambda (_) (setq status-inserted t)))
+              ((symbol-function 'yandex-arc/insert-stashes-section)
+               (lambda (_) (setq stashes-inserted t)))
+              ((symbol-function 'yandex-arc/sections/paint-visible-sections)
+               (lambda ()
+                 (should head-inserted)
+                 (should status-inserted)
+                 (should stashes-inserted)
+                 (setq painted t))))
+      (with-temp-buffer
+        (yandex-arc/redraw-arc-buffer nil nil nil)))
+    (should painted)))
+
+
+(ert-deftest yandex-arc/refresh-test/should-paint-revision-sections-after-insertion ()
+  (let (summary-inserted message-inserted files-inserted painted)
+    (cl-letf (((symbol-function 'yandex-arc/revision/get-commit-description) #'ignore)
+              ((symbol-function 'yandex-arc/revision/insert-summary-section)
+               (lambda (_) (setq summary-inserted t)))
+              ((symbol-function 'yandex-arc/revision/insert-message-section)
+               (lambda (_) (setq message-inserted t)))
+              ((symbol-function 'yandex-arc/revision/diff-commits-file-names-only) #'ignore)
+              ((symbol-function 'yandex-arc/insert-files-section)
+               (lambda (&rest _) (setq files-inserted t)))
+              ((symbol-function 'yandex-arc/sections/paint-visible-sections)
+               (lambda ()
+                 (should summary-inserted)
+                 (should message-inserted)
+                 (should files-inserted)
+                 (setq painted t))))
+      (with-temp-buffer
+        (setq-local yandex-arc/revision/commit "test-commit")
+        (yandex-arc/revision/redraw-buffer)))
+    (should painted)))
