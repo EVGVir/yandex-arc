@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t; no-byte-compile: t; -*-
+
 (define-package
   "yandex-arc"
   "0.1.0"
